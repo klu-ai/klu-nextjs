@@ -40,7 +40,7 @@ const CopyButton = ({ text }: { text: string }) => {
         onAnimationEnd={() => {
           setEffect(false)
         }}
-        tooltip="Copy"
+        tooltip={effect ? "Copied" : "Copy"}
         icon={{
           icon: copied ? ClipboardCheck : Clipboard,
           size: 14,
