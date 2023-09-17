@@ -13,7 +13,7 @@ const CopyButton = ({ text }: { text: string }) => {
     if (effect) {
       setTimeout(() => {
         setEffect(false)
-      }, 1500)
+      }, 4000)
     }
   }, [effect])
 
@@ -23,7 +23,7 @@ const CopyButton = ({ text }: { text: string }) => {
     setCopied(true)
     setTimeout(() => {
       setCopied(false)
-    }, 1500)
+    }, 4000)
   }
 
   return (

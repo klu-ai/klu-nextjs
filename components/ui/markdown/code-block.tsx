@@ -26,7 +26,7 @@ const CodeBlock: Components["code"] = ({ inline, className, children }) => {
     <code
       className={cn(
         className,
-        "whitespace-pre-wrap rounded-lg bg-zinc-100 px-1.5 py-1 text-xs text-zinc-700"
+        "whitespace-pre-wrap rounded-md bg-zinc-100 px-1.5 py-[3px] pb text-[12px] text-zinc-700 border-black/10 border-[1px]"
       )}
     >
       {children}
