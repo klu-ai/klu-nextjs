@@ -80,7 +80,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
                 <>
                   {icon ? (
                     <Icon
-                      className={cn({ "mr-1": children })}
+                      className={cn({ "mr-2": children })}
                       size={iconSize}
                     />
                   ) : null}

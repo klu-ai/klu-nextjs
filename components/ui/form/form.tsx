@@ -25,7 +25,7 @@ function FormComponent({
   } = button
   return (
     <form
-      className={cn("flex flex-col space-y-4", className)}
+      className={cn("flex flex-col space-y-2", className)}
       onSubmit={onSubmit}
     >
       {children}
