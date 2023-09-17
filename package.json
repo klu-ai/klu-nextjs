@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@kluai/core": "^0.0.15",
     "@t3-oss/env-nextjs": "^0.6.1",
     "@types/node": "20.6.2",
     "@types/react": "18.2.21",
