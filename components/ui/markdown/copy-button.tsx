@@ -4,6 +4,7 @@ import React from "react"
 import { Clipboard, ClipboardCheck } from "lucide-react"
 import { cn } from "@/utils/cn"
 import { Button } from "../button"
+import { toast } from "sonner"
 
 const CopyButton = ({ text }: { text: string }) => {
   const [effect, setEffect] = React.useState(false)
@@ -19,6 +20,7 @@ const CopyButton = ({ text }: { text: string }) => {
 
   const handleCopy = () => {
     navigator.clipboard.writeText(text)
+    toast.success("Copied!")
     setEffect(true)
     setCopied(true)
     setTimeout(() => {
