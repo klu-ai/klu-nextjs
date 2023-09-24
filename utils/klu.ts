@@ -1,4 +1,4 @@
-import { ActionResponse, StoredActionResponse } from "@/type"
+import { Action, ActionResponse, StoredActionResponse } from "@/type"
 
 export const getVariables = (prompt: string): string[] => {
   const regex = /\{\{(.+?)\}\}/g
@@ -40,4 +40,10 @@ export const checkIfActionResponseIsSaved = (
   )
   if (existingActionResponse) return true
   return false
+}
+
+export const fetchAction = async (actionGuid: string) => {
+  const req = await fetch(`/api/action?id=${actionGuid}`)
+  const res = (await req.json()) as unknown as Action
+  return res
 }

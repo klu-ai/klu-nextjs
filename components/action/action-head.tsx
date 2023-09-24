@@ -15,6 +15,7 @@ import { useKluNext } from "@/app/provider"
 import useMounted from "@/hooks/use-mounted"
 import { Skeleton } from "../ui/skeleton"
 import { Action, StoredAction } from "@/type"
+import { fetchAction } from "@/utils/klu"
 
 const ActionGUIDSchema = z.object({
   actionGuid: StringSchema({
@@ -47,17 +48,16 @@ function Head() {
     }
     setAddingAction(true)
 
-    const req = await fetch(`/api/action?id=${actionGuid}`)
-    const res = (await req.json()) as unknown as Action
+    const data = await fetchAction(actionGuid)
 
-    if (!res.guid) {
+    if (!data.guid) {
       toast.error("Action GUID is invalid. Please try again")
       setAddingAction(false)
       return
     }
 
     const action: StoredAction = {
-      ...res,
+      ...data,
       storedAt: now(),
       revalidatedAt: now(),
     }
