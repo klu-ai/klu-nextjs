@@ -1,6 +1,6 @@
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
-import { ActionResponse } from "@/components/action"
+import { ActionResponse } from "@/types"
 import { toast } from "sonner"
 
 export function cn(...inputs: ClassValue[]) {

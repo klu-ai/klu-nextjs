@@ -1,4 +1,4 @@
-import { Action, ActionResponse, StoredActionResponse } from "@/type"
+import { Action, ActionResponse, StoredActionResponse } from "@/types"
 
 export const getVariables = (prompt: string): string[] => {
   const regex = /\{\{(.+?)\}\}/g

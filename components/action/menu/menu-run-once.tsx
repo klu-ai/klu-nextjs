@@ -10,7 +10,7 @@ import { useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
 import { z } from "zod"
-import { StoredAction } from "@/type"
+import { StoredAction } from "@/types"
 
 function RunOnce({ selectedAction }: { selectedAction: StoredAction }) {
   const [isRunning, setRunning] = useState(false)

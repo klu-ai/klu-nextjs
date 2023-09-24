@@ -1,6 +1,6 @@
 "use client"
 
-import { ActionResponse, StoredAction, StoredActionResponse } from "@/type"
+import { ActionResponse, StoredAction, StoredActionResponse } from "@/types"
 import { useLocalStorage } from "@/hooks/use-localstorage"
 import {
   SetStateAction,
