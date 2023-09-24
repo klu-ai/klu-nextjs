@@ -3,24 +3,47 @@ import { getVariables, iteratorToStream } from "@/utils/klu"
 import { NextRequest, NextResponse } from "next/server"
 
 export async function GET(req: NextRequest) {
-  const { searchParams } = new URL(req.url)
-  const id = searchParams.get("id")
-  if (!id) return NextResponse.json({ message: "Missing parameters" })
-  const action = await klu.actions.get(id)
-  return NextResponse.json({
-    data: { ...action, variables: getVariables(action.prompt) },
-  })
+  try {
+    const { searchParams } = new URL(req.url)
+    const id = searchParams.get("id")
+    if (!id) throw new Error("Missing `id` parameters")
+    const action = await klu.actions.get(id)
+    return NextResponse.json(
+      { ...action, variables: getVariables(action.prompt) },
+      {
+        status: 200,
+      }
+    )
+  } catch (err) {
+    return NextResponse.json(
+      { error: err },
+      { status: 500, statusText: (err as Error).message }
+    )
+  }
 }
 
 export async function POST(req: NextRequest) {
-  const { messages, id } = await req.json()
+  try {
+    const { input, id } = await req.json()
 
-  if (!id || !messages)
-    return NextResponse.json({ message: "Missing parameters" })
+    if (!id || !input) throw new Error("Missing parameters")
 
-  const response = await klu.actions.stream(id, messages)
+    const response = await klu.actions.prompt(id, input as Object)
 
-  const stream = iteratorToStream(response.streamingData)
+    return NextResponse.json(response, {
+      status: 200,
+    })
 
-  return new Response(stream)
+    /*     const response = await klu.actions.stream(id, input)
+
+    const stream = iteratorToStream(response.streamingData)
+
+    return new Response(stream) */
+  } catch (err) {
+    console.error(err)
+    return NextResponse.json(
+      { error: err },
+      { status: 500, statusText: (err as Error).message }
+    )
+  }
 }

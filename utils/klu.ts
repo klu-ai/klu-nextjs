@@ -1,3 +1,5 @@
+import { ActionResponse, StoredActionResponse } from "@/type"
+
 export const getVariables = (prompt: string): string[] => {
   const regex = /\{\{(.+?)\}\}/g
   const unique = new Set(
@@ -19,4 +21,23 @@ export const iteratorToStream = (iterator: any) => {
       }
     },
   })
+}
+
+export const checkIfActionResponseIsSaved = (
+  storedActionResponses: StoredActionResponse[] | undefined,
+  selectedActionResponse: ActionResponse | undefined
+) => {
+  if (
+    !storedActionResponses ||
+    storedActionResponses.length === 0 ||
+    !selectedActionResponse
+  )
+    return false
+  const existingActionResponse = storedActionResponses.find(
+    (r) =>
+      r.data_guid === selectedActionResponse.data_guid &&
+      r.actionGuid === selectedActionResponse.actionGuid
+  )
+  if (existingActionResponse) return true
+  return false
 }
