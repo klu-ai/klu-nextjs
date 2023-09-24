@@ -6,9 +6,12 @@ export const env = createEnv({
     NODE_ENV: z.enum(["development", "test", "production"]),
     KLU_API_KEY: z.string(),
   },
-  client: {},
+  client: {
+    NEXT_PUBLIC_KLU_ACTION_GUID: z.string(),
+  },
   runtimeEnv: {
     NODE_ENV: process.env.NODE_ENV,
     KLU_API_KEY: process.env.KLU_API_KEY,
+    NEXT_PUBLIC_KLU_ACTION_GUID: process.env.NEXT_PUBLIC_KLU_ACTION_GUID,
   },
 })

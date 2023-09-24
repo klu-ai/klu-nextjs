@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { Check, ChevronsUpDown } from "lucide-react"
+import { Check, ChevronsUpDown, Loader } from "lucide-react"
 import * as SelectPrimitive from "@radix-ui/react-select"
 
 import { cn } from "@/utils"
@@ -14,8 +14,10 @@ const Value = SelectPrimitive.Value
 
 const Trigger = React.forwardRef<
   React.ElementRef<typeof SelectPrimitive.Trigger>,
-  React.ComponentPropsWithoutRef<typeof SelectPrimitive.Trigger>
->(({ className, children, ...props }, ref) => (
+  React.ComponentPropsWithoutRef<typeof SelectPrimitive.Trigger> & {
+    isLoading: boolean
+  }
+>(({ className, isLoading, children, ...props }, ref) => (
   <SelectPrimitive.Trigger
     ref={ref}
     className={cn(
@@ -25,9 +27,16 @@ const Trigger = React.forwardRef<
     {...props}
   >
     {children}
-    <SelectPrimitive.Icon asChild>
-      <ChevronsUpDown size={16} />
-    </SelectPrimitive.Icon>
+    <div className="flex items-center gap-[8px]">
+      {isLoading ? (
+        <SelectPrimitive.Icon asChild>
+          <Loader size={16} className="animate-spin opacity-50" />
+        </SelectPrimitive.Icon>
+      ) : null}
+      <SelectPrimitive.Icon asChild>
+        <ChevronsUpDown size={16} />
+      </SelectPrimitive.Icon>
+    </div>
   </SelectPrimitive.Trigger>
 ))
 Trigger.displayName = SelectPrimitive.Trigger.displayName

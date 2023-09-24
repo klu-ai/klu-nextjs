@@ -10,6 +10,9 @@ import {
   useState,
 } from "react"
 import { Toaster, toast } from "sonner"
+import { env } from "@/env.mjs"
+import { fetchAction } from "@/utils/klu"
+import { now } from "@/utils"
 
 type SetState<T> = React.Dispatch<SetStateAction<T>>
 
@@ -18,6 +21,7 @@ export interface IKluNextContext {
     selectedActionGuid: string | undefined
     selectedAction: StoredAction | undefined
     setSelectedActionGuid: SetState<string | undefined>
+    isFetching: boolean
   }
   response: {
     selectedActionResponse: ActionResponse | undefined
@@ -37,6 +41,7 @@ const KluNextContextImpl = createContext<IKluNextContext>({
     selectedActionGuid: undefined,
     selectedAction: undefined,
     setSelectedActionGuid: () => {},
+    isFetching: false,
   },
   response: {
     selectedActionResponse: undefined,
@@ -56,10 +61,9 @@ export default function KluProvider({
 }: {
   children: React.ReactNode
 }) {
-  const { data: storedActions } = useLocalStorage<StoredAction[]>(
-    "klu-nextjs-actions",
-    []
-  )
+  const { data: storedActions, save: storeActions } = useLocalStorage<
+    StoredAction[]
+  >("klu-nextjs-actions", [])
   const { data: storedSelectedActionGuid, save: storeSelectedActionGuid } =
     useLocalStorage<string>("klu-nextjs-selected-action", "")
 
@@ -74,7 +78,40 @@ export default function KluProvider({
   const { data: storedActionResponses, save: setStoredActionResponses } =
     useLocalStorage<StoredActionResponse[]>("klu-nextjs-action-response", [])
 
-  useEffect(function loadInitialActionsData() {
+  const [isFetchingAction, setFetchingAction] = useState(false)
+
+  useEffect(function loadInitialAction() {
+    setFetchingAction(true)
+    const initialActionGuid = env.NEXT_PUBLIC_KLU_ACTION_GUID
+
+    const initialActionGuidIsExist = storedActions.find(
+      (a) => a.guid === initialActionGuid
+    )
+
+    if (initialActionGuidIsExist) {
+      setFetchingAction(false)
+      return
+    }
+
+    fetchAction(initialActionGuid)
+      .then((a) => {
+        if (!a.guid) {
+          throw new Error("Action GUID is invalid. Please try again")
+        }
+        const initialAction: StoredAction = {
+          ...a,
+          storedAt: now(),
+          revalidatedAt: now(),
+        }
+
+        storeActions((prev) => [initialAction, ...prev])
+        setSelectedActionGuid(initialActionGuid)
+      })
+      .catch((e) => toast.error((e as Error).message))
+      .finally(() => setFetchingAction(false))
+  }, [])
+
+  useEffect(function loadStoredActionsData() {
     if (storedActions.length === 0 || !storedActions) return
 
     if (storedSelectedActionGuid) {
@@ -139,7 +176,12 @@ export default function KluProvider({
   return (
     <KluNextContextImpl.Provider
       value={{
-        action: { selectedActionGuid, selectedAction, setSelectedActionGuid },
+        action: {
+          selectedActionGuid,
+          selectedAction,
+          setSelectedActionGuid,
+          isFetching: isFetchingAction,
+        },
         response: {
           selectedActionResponse,
           setSelectedActionResponse,

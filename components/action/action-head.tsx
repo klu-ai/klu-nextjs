@@ -31,7 +31,7 @@ function Head() {
   const [isAddingAction, setAddingAction] = useState(false)
 
   const {
-    action: { selectedActionGuid, setSelectedActionGuid },
+    action: { selectedActionGuid, setSelectedActionGuid, isFetching },
   } = useKluNext()
   const { data: storedActions, save: setStoredActions } = useLocalStorage<
     StoredAction[]
@@ -82,7 +82,7 @@ function Head() {
             onValueChange={setSelectedActionGuid}
             value={selectedActionGuid}
           >
-            <Select.Trigger className="w-full">
+            <Select.Trigger className="w-full" isLoading={isFetching}>
               <Select.Value placeholder="Select an action" />
             </Select.Trigger>
             <Select.Content>

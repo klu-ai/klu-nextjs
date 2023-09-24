@@ -29,7 +29,7 @@ const Content = (props: React.HTMLAttributes<HTMLDivElement>) => {
 
   if (!selectedActionResponse || !storedActionResponses)
     return (
-      <div className="m-auto text-center">
+      <div className="m-auto text-center gap-[10px]">
         <p className="text-[14px] font-medium opacity-80">No Response</p>
         <p className="text-[14px] opacity-50">
           Please run your action first to be able to see the response
