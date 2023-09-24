@@ -119,15 +119,17 @@ function RunOnce({ selectedAction }: { selectedAction: StoredAction }) {
   )
 
   if (actionHaveVariables)
-    <>
-      <Form
-        schema={ActionWithVariablesSchema}
-        form={actionWithVariablesForm}
-        onSubmit={runActionOnce}
-        formProps={formProps}
-      />
-      <ClearValuesButton />
-    </>
+    return (
+      <>
+        <Form
+          schema={ActionWithVariablesSchema}
+          form={actionWithVariablesForm}
+          onSubmit={runActionOnce}
+          formProps={formProps}
+        />
+        <ClearValuesButton />
+      </>
+    )
 
   return (
     <>
