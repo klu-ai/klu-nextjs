@@ -17,10 +17,7 @@ export const StringSchema = (params?: RequiredFieldSchemaParams) =>
   BaseStringSchema(params).min(1, params?.required ?? "Required")
 
 export const LongStringSchema = (params?: RequiredFieldSchemaParams) =>
-  createUniqueFieldSchema(
-    BaseStringSchema(params).min(5, "Min. 5 character"),
-    "textarea"
-  )
+  createUniqueFieldSchema(BaseStringSchema(params), "textarea")
 
 export const OptionalStringSchema = (params?: FieldSchemaParams) =>
   BaseStringSchema(params).optional()
