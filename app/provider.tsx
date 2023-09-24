@@ -84,6 +84,11 @@ export default function KluProvider({
     setFetchingAction(true)
     const initialActionGuid = env.NEXT_PUBLIC_KLU_ACTION_GUID
 
+    if (!initialActionGuid) {
+      setFetchingAction(false)
+      return
+    }
+
     const initialActionGuidIsExist = storedActions.find(
       (a) => a.guid === initialActionGuid
     )
