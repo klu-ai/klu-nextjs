@@ -1,12 +1,12 @@
 "use client"
 
 import { useKluNext } from "@/app/provider"
-import { Button } from "@/components/ui/button"
+import { Button, ButtonProps } from "@/components/ui/button"
 import { Form } from "@/components/ui/form"
 import { LongStringSchema } from "@/components/ui/form/schema"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { PlayCircle, Trash } from "lucide-react"
-import { useEffect, useState } from "react"
+import { ReactNode, RefAttributes, useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
 import { z } from "zod"
@@ -88,38 +88,56 @@ function RunOnce({ selectedAction }: { selectedAction: StoredAction }) {
     }
   }
 
+  const formProps: Omit<
+    {
+      onSubmit: () => void
+      children: ReactNode
+      loading: boolean
+      button: ButtonProps & RefAttributes<HTMLButtonElement>
+      className?: string | undefined
+    },
+    "children" | "onSubmit"
+  > = {
+    loading: isRunning,
+    button: {
+      children: isRunning ? "Running Action" : "Run Action",
+      icon: { icon: PlayCircle },
+    },
+    className: "mt-[20px] capitalize",
+  }
+
+  const ClearValuesButton = () => (
+    <Button
+      variant="secondary"
+      disabled={isRunning}
+      className="w-full mt-[10px] mb-[40px]"
+      icon={{ icon: Trash }}
+      onClick={clearActionForm}
+    >
+      Clear Values
+    </Button>
+  )
+
+  if (actionHaveVariables)
+    <>
+      <Form
+        schema={ActionWithVariablesSchema}
+        form={actionWithVariablesForm}
+        onSubmit={runActionOnce}
+        formProps={formProps}
+      />
+      <ClearValuesButton />
+    </>
+
   return (
     <>
       <Form
-        schema={
-          actionHaveVariables
-            ? ActionWithVariablesSchema
-            : ActionWithNoVariableSchema
-        }
-        form={
-          actionHaveVariables
-            ? actionWithVariablesForm
-            : actionWithNoVariableForm
-        }
+        schema={ActionWithNoVariableSchema}
+        form={actionWithNoVariableForm}
         onSubmit={runActionOnce}
-        formProps={{
-          loading: isRunning,
-          button: {
-            children: isRunning ? "Running Action" : "Run Action",
-            icon: { icon: PlayCircle },
-          },
-          className: "mt-[20px] capitalize",
-        }}
+        formProps={formProps}
       />
-      <Button
-        variant="secondary"
-        disabled={isRunning}
-        className="w-full mt-[10px] mb-[40px]"
-        icon={{ icon: Trash }}
-        onClick={clearActionForm}
-      >
-        Clear Values
-      </Button>
+      <ClearValuesButton />
     </>
   )
 }

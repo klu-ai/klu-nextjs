@@ -82,7 +82,12 @@ function Head() {
             onValueChange={setSelectedActionGuid}
             value={selectedActionGuid}
           >
-            <Select.Trigger className="w-full" isLoading={isFetching}>
+            <Select.Trigger
+              className="w-full"
+              isLoading={isFetching}
+              disabled={isFetching}
+              aria-disabled={isFetching}
+            >
               <Select.Value placeholder="Select an action" />
             </Select.Trigger>
             <Select.Content>
