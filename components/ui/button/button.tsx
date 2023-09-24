@@ -26,7 +26,7 @@ const buttonVariants = cva(
         default: "h-9 px-4 py-3",
         sm: "h-8 rounded-md px-3 text-xs",
         lg: "h-10 rounded-md px-8",
-        icon: "h-9 w-9",
+        icon: "h-9 w-10",
       },
     },
     defaultVariants: {
@@ -62,7 +62,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     },
     ref
   ) => {
-    const { icon, size: iconSize = 16 } = props.icon ?? {}
+    const { icon, size: iconSize = size === "sm" ? 12 : 16 } = props.icon ?? {}
     const Comp = asChild ? Slot : "button"
     const Icon = icon ?? React.Fragment
     return (
@@ -70,23 +70,24 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         <Tooltip.Root>
           <Tooltip.Trigger asChild>
             <Comp
-              className={cn(buttonVariants({ variant, size, className }))}
+              className={cn(
+                buttonVariants({
+                  variant,
+                  size: icon && !children ? "icon" : size,
+                  className,
+                })
+              )}
               ref={ref}
               {...props}
             >
-              {isLoading ? (
-                <Loader size={16} className="mr-2 animate-spin" />
-              ) : (
-                <>
-                  {icon ? (
-                    <Icon
-                      className={cn({ "mr-2": children })}
-                      size={iconSize}
-                    />
-                  ) : null}
-                  {children}
-                </>
-              )}
+              <>
+                {isLoading ? (
+                  <Loader size={16} className="mr-2 animate-spin" />
+                ) : icon ? (
+                  <Icon className={cn({ "mr-2": children })} size={iconSize} />
+                ) : null}
+                {children}
+              </>
             </Comp>
           </Tooltip.Trigger>
           {tooltip ? (
