@@ -1,7 +1,7 @@
 import type { Components } from "react-markdown"
 import { PrismAsyncLight as SyntaxHighlighter } from "react-syntax-highlighter"
 import { a11yLight } from "react-syntax-highlighter/dist/esm/styles/hljs"
-import { cn } from "@/utils/cn"
+import { cn } from "@/utils"
 import { CopyButton } from "./copy-button"
 
 const CodeBlock: Components["code"] = ({ inline, className, children }) => {

@@ -2,7 +2,7 @@
 
 import React from "react"
 import { Clipboard, ClipboardCheck } from "lucide-react"
-import { cn } from "@/utils/cn"
+import { cn } from "@/utils"
 import { Button } from "../button"
 import { toast } from "sonner"
 

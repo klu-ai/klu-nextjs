@@ -1,4 +1,4 @@
-import { cn } from "@/utils/cn"
+import { cn } from "@/utils"
 import { createTsForm } from "@ts-react/form"
 import { z } from "zod"
 import { Button } from "../button"
