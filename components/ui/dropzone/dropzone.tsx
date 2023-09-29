@@ -34,13 +34,13 @@ const Content = ({
     <div
       {...props}
       className={cn(
-        "w-full h-[300px] border-[1px] flex flex-col rounded-md transition group",
+        "w-full h-[300px] border-[2px] border-dashed flex flex-col rounded-md transition group",
         {
           "border-red-500 text-red-500 hover:border-red-500 bg-red-500/[0.02]":
             state.isDragReject,
           "border-green-500 text-green-500 hover:border-green-500 bg-green-500/[0.02]":
             state.isDragAccept,
-          "border-black/10 hover:border-black/50 hover:bg-black/[0.0125] hover:cursor-pointer bg-transparent":
+          "border-black/10 hover:border-black/50 hover:bg-black/[0.0125] hover:cursor-pointer bg-off-white":
             !state.isDragReject && !state.isDragAccept,
         },
         className
@@ -50,14 +50,14 @@ const Content = ({
         {state.isDragAccept ? (
           <>
             <FileCheck />
-            <div className="flex flex-col text-[14px">
+            <div className="flex flex-col text-[14px] mt-[10px]">
               <p className="font-medium">File can be uploaded</p>
             </div>
           </>
         ) : state.isDragReject ? (
           <>
             <FileX />
-            <div className="flex flex-col text-[14px]">
+            <div className="flex flex-col text-[14px] mt-[10px]">
               <p className="font-medium">File type isn`t supported</p>
             </div>
             <p className="flex flex-col opacity-50 text-[12px] text-black">
@@ -66,8 +66,10 @@ const Content = ({
           </>
         ) : (
           <>
-            <UploadCloud className="opacity-50 transition group-hover:opacity-100" />
-            <div className="flex flex-col text-[14px]">
+            <div className="border-[1px] border-black/20 rounded-md p-[10px] group-hover:border-black/50 transition bg-white">
+              <UploadCloud className="opacity-50 transition group-hover:opacity-80" />
+            </div>
+            <div className="flex flex-col text-[14px] mt-[10px]">
               <p className="font-medium">Click to upload a file</p>
               <p className="opacity-50">or drag and drop here</p>
             </div>
