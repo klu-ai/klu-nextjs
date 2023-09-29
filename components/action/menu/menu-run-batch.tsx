@@ -31,6 +31,19 @@ function RunBatch({ selectedAction }: { selectedAction: StoredAction }) {
     // Do something with the files
   }, [])
 
+  const generateCSV = (
+    variables: StoredAction["variables"],
+    name: StoredAction["name"]
+  ) => {
+    const headers =
+      variables.length > 0 ? variables.join(",") + `\n` : "Input\n"
+    let el = document.createElement("a")
+    el.href = "data:text/csv;charset=utf-8," + encodeURI(headers)
+    el.target = "_blank"
+    el.download = `klu_${name.replace(" ", "-").toLocaleLowerCase()}.csv`
+    el.click()
+  }
+
   const {
     getRootProps,
     getInputProps,
@@ -99,6 +112,9 @@ function RunBatch({ selectedAction }: { selectedAction: StoredAction }) {
         </Button>
         <Button
           variant="ghost"
+          onClick={() =>
+            generateCSV(selectedAction.variables, selectedAction.name)
+          }
           className="text-blue-500 hover:bg-blue-500/10 transition"
           icon={{ icon: Download }}
         >
