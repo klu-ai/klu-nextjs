@@ -1,5 +1,12 @@
 import { cn } from "@/utils"
-import { FileCheck, FileX, LucideIcon, Upload, UploadCloud } from "lucide-react"
+import {
+  File,
+  FileCheck,
+  FileX,
+  LucideIcon,
+  Upload,
+  UploadCloud,
+} from "lucide-react"
 import React from "react"
 
 const Root = ({ children, ...props }: React.HTMLAttributes<HTMLDivElement>) => {
@@ -13,21 +20,20 @@ const Input = React.forwardRef<
   return <input ref={ref} {...props} />
 })
 
-type DropzoneContentState =
-  | "isDragActive"
-  | "isDragReject"
-  | "isDragAccept"
-  | "isFocused"
+type DropzoneContentState = "isDragReject" | "isDragAccept" | "isUploaded"
 
 type DropzoneContentProps = React.HTMLAttributes<HTMLDivElement> & {
   state: { [K in DropzoneContentState]: boolean }
-  fileTypes: Array<string>
+  file: {
+    acceptedTypes: Array<string>
+    name: File["name"] | undefined
+  }
 }
 
 const Content = ({
   state,
   className,
-  fileTypes,
+  file,
   ...props
 }: DropzoneContentProps) => {
   return (
@@ -36,18 +42,32 @@ const Content = ({
       className={cn(
         "w-full h-[300px] border-[2px] border-dashed flex flex-col rounded-md transition group",
         {
-          "border-red-500 text-red-500 hover:border-red-500 bg-red-500/[0.02]":
-            state.isDragReject,
-          "border-green-500 text-green-500 hover:border-green-500 bg-green-500/[0.02]":
+          "border-blue-500/50 text-blue-500 hover:border-blue-500 bg-blue-500/5 hover:bg-blue-500/10 hover:border-solid hover:cursor-pointer":
+            state.isUploaded,
+          "border-red-500 text-red-500 bg-red-500/[0.02]": state.isDragReject,
+          "border-green-500 text-green-500 bg-green-500/[0.02]":
             state.isDragAccept,
           "border-black/10 hover:border-black/50 hover:bg-black/[0.0125] hover:cursor-pointer bg-off-white":
-            !state.isDragReject && !state.isDragAccept,
+            !state.isDragReject && !state.isDragAccept && !state.isUploaded,
         },
         className
       )}
     >
       <div className="flex flex-col gap-[10px] w-2/3 text-center m-auto items-center">
-        {state.isDragAccept ? (
+        {state.isUploaded ? (
+          <>
+            <div className="border-[1px] border-blue-500/50 rounded-md p-[10px] transition bg-white">
+              <File />
+            </div>
+            <div className="flex flex-col text-[14px] mt-[10px]">
+              <p className="font-medium">{file.name}</p>
+              <p className="opacity-50">click to change</p>
+            </div>
+            <p className="flex flex-col opacity-50 text-[12px]">
+              supported file: {file.acceptedTypes.join(", ")}
+            </p>
+          </>
+        ) : state.isDragAccept ? (
           <>
             <FileCheck />
             <div className="flex flex-col text-[14px] mt-[10px]">
@@ -61,7 +81,7 @@ const Content = ({
               <p className="font-medium">File type isn`t supported</p>
             </div>
             <p className="flex flex-col opacity-50 text-[12px] text-black">
-              supported file: {fileTypes.join(", ")}
+              supported file: {file.acceptedTypes.join(", ")}
             </p>
           </>
         ) : (
@@ -74,7 +94,7 @@ const Content = ({
               <p className="opacity-50">or drag and drop here</p>
             </div>
             <p className="flex flex-col opacity-50 text-[12px] text-black">
-              supported file: {fileTypes.join(", ")}
+              supported file: {file.acceptedTypes.join(", ")}
             </p>
           </>
         )}

@@ -16,18 +16,60 @@ import {
   XCircle,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { toast } from "sonner"
 
 function RunBatch({ selectedAction }: { selectedAction: StoredAction }) {
   const [actionHaveVariables, setActionHaveVariables] = useState(
     selectedAction.variables.length > 0
   )
 
-  const [state] = useState(["Company Name"])
+  const [uploadedCSVHeaders, setUploadedCSVHeaders] = useState<Array<string>>()
 
-  const [checked] = useState(false) // with file
+  const [file, setFile] = useState<{
+    name: File["name"]
+    isUploaded: boolean
+  }>() // with file
 
-  const onDrop = useCallback((acceptedFiles) => {
+  const onDrop = useCallback(async (acceptedFiles: File[]) => {
     console.log(acceptedFiles)
+    try {
+      const file = acceptedFiles[0]
+
+      // 1. create url from the file
+      const fileUrl = URL.createObjectURL(file)
+
+      // 2. use fetch API to read the file
+      const response = await fetch(fileUrl)
+
+      // 3. get the text from the response
+      const text = await response.text()
+
+      console.log(text)
+
+      // 4. split the text by newline
+      const lines = text.split("\n")
+
+      console.log(lines)
+
+      // 5. map through all the lines and split each line by comma.
+      const data = lines.map((line) =>
+        line.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map((x) => x.trim())
+      )
+
+      setUploadedCSVHeaders(data[0])
+
+      setFile({
+        name: file.name,
+        isUploaded: true,
+      })
+
+      toast.success("File is loaded")
+
+      console.log(data[0])
+    } catch (e) {
+      toast.error((e as Error).message)
+    }
+
     // Do something with the files
   }, [])
 
@@ -67,29 +109,56 @@ function RunBatch({ selectedAction }: { selectedAction: StoredAction }) {
           The CSV file must have the following headers:
         </p>
         <div className="flex flex-col gap-[5px]">
-          {selectedAction.variables.length > 0
-            ? selectedAction.variables.map((x, i) => (
-                <div className="flex items-center w-full gap-[5px]" key={i}>
-                  {checked ? (
-                    state.find((a) => a === x) ? (
-                      <CheckCircle size={12} className="text-green-600" />
-                    ) : (
-                      <XCircle size={12} className="text-red-600" />
-                    )
+          {selectedAction.variables.length > 0 ? (
+            selectedAction.variables.map((x, i) => (
+              <div className="flex items-center w-full gap-[5px]" key={i}>
+                {file?.isUploaded ? (
+                  uploadedCSVHeaders &&
+                  (uploadedCSVHeaders.find((a) => a === x) ? (
+                    <CheckCircle size={12} className="text-green-600" />
                   ) : (
-                    <CircleDashed size={12} className="opacity-50" />
-                  )}
-                  <p>{x}</p>
-                </div>
-              ))
-            : null}
+                    <XCircle size={12} className="text-red-600" />
+                  ))
+                ) : (
+                  <CircleDashed size={12} className="opacity-50" />
+                )}
+                <p>{x}</p>
+                {uploadedCSVHeaders &&
+                  (uploadedCSVHeaders.find((a) => a === x) ? (
+                    <p className="text-green-500 text-right ml-auto">
+                      Available
+                    </p>
+                  ) : (
+                    <p className="text-red-600 text-right ml-auto">Missing</p>
+                  ))}
+              </div>
+            ))
+          ) : (
+            <div className="flex items-center w-full gap-[5px]">
+              {file?.isUploaded ? (
+                uploadedCSVHeaders &&
+                (uploadedCSVHeaders.find((a) => a === x) ? (
+                  <CheckCircle size={12} className="text-green-600" />
+                ) : (
+                  <XCircle size={12} className="text-red-600" />
+                ))
+              ) : (
+                <CircleDashed size={12} className="opacity-50" />
+              )}
+              <p>Input</p>
+            </div>
+          )}
         </div>
       </div>
       <Dropzone.Root {...getRootProps()}>
         <Dropzone.Input {...getInputProps()} />
         <Dropzone.Content
-          fileTypes={[".csv"]}
-          state={{ isDragAccept, isDragActive, isDragReject, isFocused }}
+          file={{ name: file?.name, acceptedTypes: [".csv"] }}
+          state={{
+            isDragAccept,
+            isDragReject,
+            isUploaded: file?.isUploaded ?? false,
+          }}
         />
       </Dropzone.Root>
       <div className="flex flex-col gap-[10px]">
