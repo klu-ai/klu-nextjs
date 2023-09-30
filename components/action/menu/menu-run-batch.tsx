@@ -54,7 +54,10 @@ function RunBatch({ selectedAction }: { selectedAction: StoredAction }) {
 
       // 5. map through all the lines and split each line by comma.
       const data = lines.map((line) =>
-        line.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map((x) => x.trim())
+        line
+          .trim()
+          .split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/)
+          .map((x) => x.trim())
       )
 
       const isHeadersValid =
