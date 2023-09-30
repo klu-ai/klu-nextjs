@@ -128,9 +128,16 @@ function RunBatch({ selectedAction }: { selectedAction: StoredAction }) {
               ) : (
                 <CircleDashed size={12} className="opacity-50" />
               )}
-              <p>Input</p>
+              <p>{x}</p>
+              {file?.isUploaded &&
+                uploadedCSVHeaders &&
+                (uploadedCSVHeaders.find((a) => a === x) ? (
+                  <p className="text-green-500 text-right ml-auto">Available</p>
+                ) : (
+                  <p className="text-red-600 text-right ml-auto">Missing</p>
+                ))}
             </div>
-          )}
+          ))}
         </div>
       </div>
       <Dropzone.Root {...getRootProps()}>
@@ -155,12 +162,12 @@ function RunBatch({ selectedAction }: { selectedAction: StoredAction }) {
         </Button>
         <Button
           variant="secondary"
-          /*       disabled={isRunning} */
+          disabled={!file}
           className="w-full"
           icon={{ icon: Trash }}
-          /*       onClick={clearActionForm} */
+          onClick={() => setFile(undefined)}
         >
-          Clear Values
+          Delete File
         </Button>
         <Button
           variant="ghost"
