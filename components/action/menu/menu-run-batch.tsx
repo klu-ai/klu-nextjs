@@ -1,21 +1,18 @@
 "use client"
 
-import { StoredAction } from "@/types"
-import { cn } from "@/utils"
-import { useCallback, useEffect, useState } from "react"
-import { useDropzone } from "react-dropzone"
+import { Button } from "@/components/ui/button"
 import * as Dropzone from "@/components/ui/dropzone"
+import { StoredAction } from "@/types"
 import {
   CheckCircle,
-  Circle,
   CircleDashed,
   Download,
   PlayCircle,
   Trash,
-  UploadCloud,
   XCircle,
 } from "lucide-react"
-import { Button } from "@/components/ui/button"
+import { useCallback, useEffect, useState } from "react"
+import { useDropzone } from "react-dropzone"
 import { toast } from "sonner"
 
 function RunBatch({ selectedAction }: { selectedAction: StoredAction }) {
@@ -37,41 +34,43 @@ function RunBatch({ selectedAction }: { selectedAction: StoredAction }) {
     )
   }, [selectedAction])
 
-  const onDrop = useCallback(async (acceptedFiles: File[]) => {
-    console.log(acceptedFiles)
-    try {
-      const file = acceptedFiles[0]
+  const onDrop = useCallback(
+    async (acceptedFiles: File[]) => {
+      try {
+        const file = acceptedFiles[0]
 
-      // 1. create url from the file
-      const fileUrl = URL.createObjectURL(file)
+        const fileUrl = URL.createObjectURL(file)
 
-      // 2. use fetch API to read the file
-      const response = await fetch(fileUrl)
+        const response = await fetch(fileUrl)
 
-      // 3. get the text from the response
-      const text = await response.text()
+        const text = await response.text()
 
-      console.log(text)
+        // Split the text by newline
+        const lines = text.split("\n")
 
-      // 4. split the text by newline
-      const lines = text.split("\n")
+        // Map through all the lines and split each line by comma.
+        const data = lines.map((line) =>
+          line
+            .trim()
+            .split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/)
+            .map((x) => x.trim())
+        )
 
-      console.log(lines)
+        const isHeadersValid =
+          selectedActionVariables.filter((x) => !data[0].includes(x)).length ===
+          0
 
-      // 5. map through all the lines and split each line by comma.
-      const data = lines.map((line) =>
-        line
-          .trim()
-          .split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/)
-          .map((x) => x.trim())
-      )
+        if (!isHeadersValid) throw new Error("Header is invalid")
 
-      const isHeadersValid =
-        selectedActionVariables.filter((x) => !data[0].includes(x)).length === 0
+        setUploadedCSVHeaders(data[0])
 
-      if (!isHeadersValid) throw new Error("Header is invalid")
+        setFile({
+          name: file.name,
+          isUploaded: true,
+          isHeadersValid,
+        })
 
-      setUploadedCSVHeaders(data[0])
+        toast.success("File is loaded")
 
         console.log(data[0])
       } catch (e) {
