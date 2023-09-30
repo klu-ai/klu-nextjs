@@ -31,6 +31,12 @@ function RunBatch({ selectedAction }: { selectedAction: StoredAction }) {
     isHeadersValid: boolean
   }>()
 
+  useEffect(() => {
+    setSelectedActionVariables(
+      selectedAction.variables.length > 0 ? selectedAction.variables : ["Input"]
+    )
+  }, [selectedAction])
+
   const onDrop = useCallback(async (acceptedFiles: File[]) => {
     console.log(acceptedFiles)
     try {
