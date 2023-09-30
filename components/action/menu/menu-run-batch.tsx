@@ -28,7 +28,8 @@ function RunBatch({ selectedAction }: { selectedAction: StoredAction }) {
   const [file, setFile] = useState<{
     name: File["name"]
     isUploaded: boolean
-  }>() // with file
+    isHeadersValid: boolean
+  }>()
 
   const onDrop = useCallback(async (acceptedFiles: File[]) => {
     console.log(acceptedFiles)
@@ -56,11 +57,17 @@ function RunBatch({ selectedAction }: { selectedAction: StoredAction }) {
         line.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map((x) => x.trim())
       )
 
+      const isHeadersValid =
+        selectedActionVariables.filter((x) => !data[0].includes(x)).length === 0
+
+      if (!isHeadersValid) throw new Error("Header is invalid")
+
       setUploadedCSVHeaders(data[0])
 
       setFile({
         name: file.name,
         isUploaded: true,
+        isHeadersValid,
       })
 
       toast.success("File is loaded")
@@ -139,7 +146,7 @@ function RunBatch({ selectedAction }: { selectedAction: StoredAction }) {
       </Dropzone.Root>
       <div className="flex flex-col gap-[10px]">
         <Button
-          /*       disabled={isRunning} */
+          disabled={!file?.isHeadersValid}
           className="w-full"
           icon={{ icon: PlayCircle }}
           /*       onClick={clearActionForm} */
