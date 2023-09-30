@@ -2,6 +2,7 @@
 
 import { Button } from "@/components/ui/button"
 import * as Dropzone from "@/components/ui/dropzone"
+import useInitialChange from "@/hooks/use-initialchange"
 import { StoredAction } from "@/types"
 import {
   CheckCircle,
@@ -16,9 +17,13 @@ import { useDropzone } from "react-dropzone"
 import { toast } from "sonner"
 
 function RunBatch({ selectedAction }: { selectedAction: StoredAction }) {
-  const [selectedActionVariables, setSelectedActionVariables] = useState(
-    selectedAction.variables.length > 0 ? selectedAction.variables : ["Input"]
-  )
+  const [selectedActionVariables, setSelectedActionVariables] =
+    useInitialChange(
+      selectedAction.variables.length > 0
+        ? selectedAction.variables
+        : ["Input"],
+      [selectedAction]
+    )
 
   const [uploadedCSVHeaders, setUploadedCSVHeaders] = useState<Array<string>>()
 
@@ -27,12 +32,6 @@ function RunBatch({ selectedAction }: { selectedAction: StoredAction }) {
     isUploaded: boolean
     isHeadersValid: boolean
   }>()
-
-  useEffect(() => {
-    setSelectedActionVariables(
-      selectedAction.variables.length > 0 ? selectedAction.variables : ["Input"]
-    )
-  }, [selectedAction])
 
   const onDrop = useCallback(
     async (acceptedFiles: File[]) => {
