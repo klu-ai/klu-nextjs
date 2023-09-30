@@ -73,21 +73,13 @@ function RunBatch({ selectedAction }: { selectedAction: StoredAction }) {
 
       setUploadedCSVHeaders(data[0])
 
-      setFile({
-        name: file.name,
-        isUploaded: true,
-        isHeadersValid,
-      })
-
-      toast.success("File is loaded")
-
-      console.log(data[0])
-    } catch (e) {
-      toast.error((e as Error).message)
-    }
-
-    // Do something with the files
-  }, [])
+        console.log(data[0])
+      } catch (e) {
+        toast.error((e as Error).message)
+      }
+    },
+    [selectedActionVariables]
+  )
 
   const generateCSV = (
     variables: StoredAction["variables"],
@@ -102,21 +94,14 @@ function RunBatch({ selectedAction }: { selectedAction: StoredAction }) {
     el.click()
   }
 
-  const {
-    getRootProps,
-    getInputProps,
-    isDragActive,
-    isDragAccept,
-    isDragReject,
-    isFocused,
-    acceptedFiles,
-  } = useDropzone({
-    accept: {
-      "text/csv": [".csv"],
-    },
-    maxFiles: 1,
-    onDrop,
-  })
+  const { getRootProps, getInputProps, isDragAccept, isDragReject } =
+    useDropzone({
+      accept: {
+        "text/csv": [".csv"],
+      },
+      maxFiles: 1,
+      onDrop,
+    })
 
   return (
     <div className="flex flex-col gap-[20px] my-[20px]">
