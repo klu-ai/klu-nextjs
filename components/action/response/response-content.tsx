@@ -3,7 +3,7 @@
 import { useKluNext } from "@/app/provider"
 import { Button } from "@/components/ui/button"
 import { Markdown } from "@/components/ui/markdown"
-import { useCheckIfActionResponseIsSaved } from "@/hooks/use-actionresponse"
+import useCheckIfActionResponseIsSaved from "@/hooks/use-actionresponse"
 import { ActionResponse, StoredActionResponse } from "@/types"
 import { copyToClipboard, now } from "@/utils"
 import { Bookmark, BookmarkMinus, Copy, RotateCw } from "lucide-react"
