@@ -19,8 +19,8 @@ import { Button } from "@/components/ui/button"
 import { toast } from "sonner"
 
 function RunBatch({ selectedAction }: { selectedAction: StoredAction }) {
-  const [actionHaveVariables, setActionHaveVariables] = useState(
-    selectedAction.variables.length > 0
+  const [selectedActionVariables, setSelectedActionVariables] = useState(
+    selectedAction.variables.length > 0 ? selectedAction.variables : ["Input"]
   )
 
   const [uploadedCSVHeaders, setUploadedCSVHeaders] = useState<Array<string>>()
@@ -109,32 +109,8 @@ function RunBatch({ selectedAction }: { selectedAction: StoredAction }) {
           The CSV file must have the following headers:
         </p>
         <div className="flex flex-col gap-[5px]">
-          {selectedAction.variables.length > 0 ? (
-            selectedAction.variables.map((x, i) => (
-              <div className="flex items-center w-full gap-[5px]" key={i}>
-                {file?.isUploaded ? (
-                  uploadedCSVHeaders &&
-                  (uploadedCSVHeaders.find((a) => a === x) ? (
-                    <CheckCircle size={12} className="text-green-600" />
-                  ) : (
-                    <XCircle size={12} className="text-red-600" />
-                  ))
-                ) : (
-                  <CircleDashed size={12} className="opacity-50" />
-                )}
-                <p>{x}</p>
-                {uploadedCSVHeaders &&
-                  (uploadedCSVHeaders.find((a) => a === x) ? (
-                    <p className="text-green-500 text-right ml-auto">
-                      Available
-                    </p>
-                  ) : (
-                    <p className="text-red-600 text-right ml-auto">Missing</p>
-                  ))}
-              </div>
-            ))
-          ) : (
-            <div className="flex items-center w-full gap-[5px]">
+          {selectedActionVariables.map((x, i) => (
+            <div className="flex items-center w-full gap-[5px]" key={i}>
               {file?.isUploaded ? (
                 uploadedCSVHeaders &&
                 (uploadedCSVHeaders.find((a) => a === x) ? (
