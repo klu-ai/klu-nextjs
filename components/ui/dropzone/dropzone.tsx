@@ -42,7 +42,7 @@ const Content = ({
       className={cn(
         "w-full h-[300px] border-[2px] border-dashed flex flex-col rounded-md transition group",
         {
-          "border-blue-500/50 text-blue-500 hover:border-blue-500 bg-blue-500/5 hover:bg-blue-500/10 hover:border-solid hover:cursor-pointer":
+          "border-green-500/50 text-green-500 hover:border-green-500 bg-green-500/5 hover:bg-green-500/10 hover:border-dashed border-solid hover:cursor-pointer":
             state.isUploaded,
           "border-red-500 text-red-500 bg-red-500/[0.02]": state.isDragReject,
           "border-green-500 text-green-500 bg-green-500/[0.02]":
@@ -56,7 +56,7 @@ const Content = ({
       <div className="flex flex-col gap-[10px] w-2/3 text-center m-auto items-center">
         {state.isUploaded ? (
           <>
-            <div className="border-[1px] border-blue-500/50 rounded-md p-[10px] transition bg-white">
+            <div className="border-[1px] border-green-500/50 rounded-md p-[10px] transition bg-green-100/50">
               <File />
             </div>
             <div className="flex flex-col text-[14px] mt-[10px]">
