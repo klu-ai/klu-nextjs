@@ -1,5 +1,5 @@
 import { IKluNextContext } from "@/app/provider"
-import checkIfActionResponseIsSaved from "@/utils/klu"
+import { checkIfActionResponseIsSaved } from "@/utils/klu"
 import { useEffect, useState } from "react"
 
 /**
