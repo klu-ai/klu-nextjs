@@ -26,6 +26,8 @@ export interface IKluNextContext {
   response: {
     selectedActionResponse: ActionResponse | undefined
     setSelectedActionResponse: SetState<ActionResponse | undefined>
+    actionResponses: Array<ActionResponse> | undefined
+    setActionResponses: SetState<Array<ActionResponse> | undefined>
     storedActionResponses:
       | ReturnType<typeof useLocalStorage<StoredActionResponse[]>>["data"]
       | undefined
@@ -46,6 +48,8 @@ const KluNextContextImpl = createContext<IKluNextContext>({
   response: {
     selectedActionResponse: undefined,
     setSelectedActionResponse: () => {},
+    actionResponses: undefined,
+    setActionResponses: () => {},
     storedActionResponses: undefined,
     setStoredActionResponses: () => {},
     generate: async () => {},
@@ -74,6 +78,9 @@ export default function KluProvider({
 
   const [selectedActionResponse, setSelectedActionResponse] =
     useState<ActionResponse>()
+
+  const [actionResponses, setActionResponses] =
+    useState<IKluNextContext["response"]["actionResponses"]>()
 
   const { data: storedActionResponses, save: setStoredActionResponses } =
     useLocalStorage<StoredActionResponse[]>("klu-nextjs-action-response", [])
@@ -173,6 +180,12 @@ export default function KluProvider({
       input: values,
     }
 
+    if (!actionResponses) {
+      setActionResponses([actionResponse])
+    } else {
+      setActionResponses([...actionResponses, actionResponse])
+    }
+
     setSelectedActionResponse(actionResponse)
 
     return
@@ -190,6 +203,8 @@ export default function KluProvider({
         response: {
           selectedActionResponse,
           setSelectedActionResponse,
+          actionResponses,
+          setActionResponses,
           storedActionResponses,
           setStoredActionResponses,
           generate,
