@@ -1,33 +1,92 @@
 "use client"
 
-import { useKluNext } from "@/app/provider"
+import { IKluNextContext, useKluNext } from "@/app/provider"
 import { Button } from "@/components/ui/button"
 import { Markdown } from "@/components/ui/markdown"
 import useCheckIfActionResponseIsSaved from "@/hooks/use-actionresponse"
-import { ActionResponse, StoredActionResponse } from "@/types"
-import { copyToClipboard, now } from "@/utils"
-import { Bookmark, BookmarkMinus, Copy, RotateCw } from "lucide-react"
+import { ActionResponse } from "@/types"
+import { Bookmark, BookmarkMinus, RotateCw } from "lucide-react"
 import { useState } from "react"
 import { toast } from "sonner"
 
-const Content = (props: React.HTMLAttributes<HTMLDivElement>) => {
+const ResponseItem = ({
+  actionResponse,
+  storedActionResponses,
+  generate,
+  saveResponse,
+  unsaveResponse,
+}: {
+  actionResponse: ActionResponse
+  storedActionResponses: IKluNextContext["response"]["storedActionResponses"]
+  generate: IKluNextContext["response"]["generate"]
+  saveResponse: IKluNextContext["response"]["saveResponse"]
+  unsaveResponse: IKluNextContext["response"]["unsaveResponse"]
+}) => {
   const [state, setState] = useState<"IDLE" | "REGENERATING">("IDLE")
-
-  const {
-    response: {
-      selectedActionResponse,
-      generate,
-      storedActionResponses,
-      setStoredActionResponses,
-    },
-  } = useKluNext()
 
   const { isActionResponseIsSaved } = useCheckIfActionResponseIsSaved(
     storedActionResponses,
-    selectedActionResponse
+    actionResponse
   )
 
-  if (!selectedActionResponse || !storedActionResponses)
+  async function regenerate(input: ActionResponse["input"]) {
+    setState("REGENERATING")
+    try {
+      await generate(input, { regenerate: true })
+      toast.success("Response is regenerated")
+    } catch (e) {
+      toast.error((e as Error).message)
+    } finally {
+      setState("IDLE")
+    }
+  }
+
+  return (
+    <>
+      <div
+        key={actionResponse.actionGuid}
+        className="border-black/10 border-[1px] rounded-md bg-white p-4"
+      >
+        <Markdown text={actionResponse.msg} />
+      </div>
+      <div className="flex items-center gap-[20px]">
+        <Button
+          variant="secondary"
+          onClick={async () => await regenerate(actionResponse.input)}
+          icon={{ icon: RotateCw }}
+          disabled={state === "REGENERATING"}
+          isLoading={state === "REGENERATING"}
+        >
+          {state === "REGENERATING" ? "Regenerating" : "Regenerate"}
+        </Button>
+        <Button
+          variant="secondary"
+          icon={{ icon: isActionResponseIsSaved ? BookmarkMinus : Bookmark }}
+          onClick={
+            isActionResponseIsSaved
+              ? () => unsaveResponse(actionResponse)
+              : () => saveResponse(actionResponse)
+          }
+        >
+          {isActionResponseIsSaved ? "Unsave" : "Save"}
+        </Button>
+      </div>
+    </>
+  )
+}
+
+const Content = () => {
+  const {
+    response: {
+      actionResponses,
+      storedActionResponses,
+      generate,
+      saveResponse,
+      unsaveResponse,
+    },
+  } = useKluNext()
+
+  if (!actionResponses || actionResponses?.length === 0)
     return (
       <div className="m-auto text-center gap-[10px]">
         <p className="text-[14px] font-medium opacity-80">No Response</p>
@@ -37,75 +96,16 @@ const Content = (props: React.HTMLAttributes<HTMLDivElement>) => {
       </div>
     )
 
-  async function regenerate(input: ActionResponse["input"]) {
-    setState("REGENERATING")
-    try {
-      await generate(input)
-      toast.success("Response is regenerated")
-    } catch (e) {
-      toast.error((e as Error).message)
-    } finally {
-      setState("IDLE")
-    }
-  }
-
-  function save(response: ActionResponse) {
-    const storedActionResponse: StoredActionResponse = {
-      ...response,
-      storedAt: now(),
-    }
-
-    setStoredActionResponses((prev) => [storedActionResponse, ...prev])
-    toast.success("Response is saved")
-  }
-
-  function unsave(
-    response: ActionResponse,
-    storedResponses: StoredActionResponse[]
-  ) {
-    const newStoredActionResponse = storedResponses.filter(
-      (r) => r.data_guid !== response.data_guid
-    )
-    setStoredActionResponses(newStoredActionResponse)
-    toast.success("Response is removed from your saved")
-  }
-
-  return (
-    <>
-      <div className="border-black/10 border-[1px] rounded-md bg-white p-4">
-        <Markdown text={selectedActionResponse.msg} />
-      </div>
-      <div className="flex items-center gap-[20px]">
-        <Button
-          variant="secondary"
-          onClick={async () => await regenerate(selectedActionResponse.input)}
-          icon={{ icon: RotateCw }}
-          disabled={state === "REGENERATING"}
-          isLoading={state === "REGENERATING"}
-        >
-          {state === "REGENERATING" ? "Regenerating" : "Regenerate"}
-        </Button>
-        <Button
-          variant="secondary"
-          onClick={() => copyToClipboard(selectedActionResponse.msg)}
-          icon={{ icon: Copy }}
-        >
-          Copy
-        </Button>
-        <Button
-          variant="secondary"
-          icon={{ icon: isActionResponseIsSaved ? BookmarkMinus : Bookmark }}
-          onClick={
-            isActionResponseIsSaved
-              ? () => unsave(selectedActionResponse, storedActionResponses)
-              : () => save(selectedActionResponse)
-          }
-        >
-          {isActionResponseIsSaved ? "Unsave" : "Save"}
-        </Button>
-      </div>
-    </>
-  )
+  return actionResponses.map((ar) => (
+    <ResponseItem
+      key={ar.actionGuid}
+      actionResponse={ar}
+      generate={generate}
+      saveResponse={saveResponse}
+      unsaveResponse={unsaveResponse}
+      storedActionResponses={storedActionResponses}
+    />
+  ))
 }
 
 export { Content }
