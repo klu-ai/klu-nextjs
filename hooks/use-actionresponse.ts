@@ -1,4 +1,5 @@
 import { IKluNextContext } from "@/app/provider"
+import { ActionResponse } from "@/types"
 import { checkIfActionResponseIsSaved } from "@/utils/klu"
 import { useEffect, useState } from "react"
 
@@ -12,7 +13,7 @@ import { useEffect, useState } from "react"
  */
 const useCheckIfActionResponseIsSaved = (
   storedActionResponses: IKluNextContext["response"]["storedActionResponses"],
-  selectedActionResponse: IKluNextContext["response"]["selectedActionResponse"]
+  selectedActionResponse: ActionResponse
 ) => {
   /**
    * State to track whether the selected action response is saved.
