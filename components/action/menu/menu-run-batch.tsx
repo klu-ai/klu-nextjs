@@ -193,11 +193,13 @@ function RunBatch({ selectedAction }: { selectedAction: StoredAction }) {
           onClick={runActionOnBatch}
           isLoading={isRunning}
         >
-          {isRunning
+          {file
+            ? `Run ${file.inputs.length} Inputs`
+            : isRunning
             ? `Running ${
                 file?.inputs.length! - responseBatchDoneCount
               } Remaining`
-            : `Run Batch`}
+            : "Run Batch"}
         </Button>
         <Button
           variant="secondary"
