@@ -11,6 +11,7 @@ import { useForm } from "react-hook-form"
 import { toast } from "sonner"
 import { z } from "zod"
 import { StoredAction } from "@/types"
+import useInitialChange from "@/hooks/use-initialchange"
 
 function RunOnce({ selectedAction }: { selectedAction: StoredAction }) {
   const [isRunning, setRunning] = useState(false)
@@ -19,12 +20,8 @@ function RunOnce({ selectedAction }: { selectedAction: StoredAction }) {
     response: { generate },
   } = useKluNext()
 
-  const [actionHaveVariables, setActionHaveVariables] = useState(
-    selectedAction.variables.length > 0
-  )
-
-  useEffect(
-    () => setActionHaveVariables(selectedAction.variables.length > 0),
+  const [actionHaveVariables, setActionHaveVariables] = useInitialChange(
+    selectedAction.variables.length > 0,
     [selectedAction]
   )
 

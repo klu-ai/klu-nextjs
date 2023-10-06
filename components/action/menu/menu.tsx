@@ -6,6 +6,7 @@ import * as Tabs from "@/components/ui/tabs"
 import useMounted from "@/hooks/use-mounted"
 import { RunOnce } from "./menu-run-once"
 import { Saved } from "./menu-saved"
+import { RunBatch } from "./menu-run-batch"
 
 function MenuAndContent() {
   const {
@@ -51,7 +52,9 @@ function MenuAndContent() {
       <Tabs.Content value="run-once">
         <RunOnce selectedAction={selectedAction} />
       </Tabs.Content>
-      <Tabs.Content value="run-batch"></Tabs.Content>
+      <Tabs.Content value="run-batch">
+        <RunBatch selectedAction={selectedAction} />
+      </Tabs.Content>
       <Tabs.Content value="saved">
         <Saved response={response} selectedActionGuid={selectedAction.guid} />
       </Tabs.Content>

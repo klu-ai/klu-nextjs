@@ -23,22 +23,46 @@ export const iteratorToStream = (iterator: any) => {
   })
 }
 
+/**
+ * Check if a given action response is saved in the stored action responses.
+ *
+ * @param {StoredActionResponse[] | undefined} storedActionResponses - The array of stored action responses.
+ * @param {ActionResponse | undefined} selectedActionResponse - The selected action response to check for.
+ *
+ * @returns {boolean} Returns true if the action response is saved, otherwise returns false.
+ */
 export const checkIfActionResponseIsSaved = (
   storedActionResponses: StoredActionResponse[] | undefined,
   selectedActionResponse: ActionResponse | undefined
 ) => {
+  /**
+   * If storedActionResponses is falsy or empty, or selectedActionResponse is falsy,
+   * the action response is considered not saved.
+   */
   if (
     !storedActionResponses ||
     storedActionResponses.length === 0 ||
     !selectedActionResponse
-  )
+  ) {
     return false
+  }
+
+  /**
+   * Check if there is an existing action response in the storedActionResponses array
+   * with the same data_guid and actionGuid as the selectedActionResponse.
+   */
   const existingActionResponse = storedActionResponses.find(
     (r) =>
       r.data_guid === selectedActionResponse.data_guid &&
       r.actionGuid === selectedActionResponse.actionGuid
   )
-  if (existingActionResponse) return true
+
+  // If an existing action response is found, it is considered saved.
+  if (existingActionResponse) {
+    return true
+  }
+
+  // If no existing action response is found, it is considered not saved.
   return false
 }
 
