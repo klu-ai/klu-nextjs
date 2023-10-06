@@ -193,7 +193,7 @@ function RunBatch({ selectedAction }: { selectedAction: StoredAction }) {
           onClick={runActionOnBatch}
           isLoading={isRunning}
         >
-          {file
+          {file?.inputs
             ? `Run ${file.inputs.length} Inputs`
             : isRunning
             ? `Running ${
