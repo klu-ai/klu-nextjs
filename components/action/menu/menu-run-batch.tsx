@@ -24,13 +24,12 @@ function RunBatch({ selectedAction }: { selectedAction: StoredAction }) {
     response: { generate },
   } = useKluNext()
 
-  const [selectedActionVariables, setSelectedActionVariables] =
-    useInitialChange(
-      selectedAction.variables.length > 0
-        ? selectedAction.variables
-        : ["Input"],
-      [selectedAction]
-    )
+  const [responseBatchDoneCount, setResponseBatchDoneCount] = useState(0)
+
+  const [selectedActionVariables, _] = useInitialChange(
+    selectedAction.variables.length > 0 ? selectedAction.variables : ["Input"],
+    [selectedAction]
+  )
 
   const [uploadedCSVHeaders, setUploadedCSVHeaders] = useState<Array<string>>()
 
@@ -96,8 +95,6 @@ function RunBatch({ selectedAction }: { selectedAction: StoredAction }) {
         })
 
         toast.success("File is loaded")
-
-        console.log(data[0])
       } catch (e) {
         toast.error((e as Error).message)
       }
@@ -129,10 +126,12 @@ function RunBatch({ selectedAction }: { selectedAction: StoredAction }) {
 
   async function runActionOnBatch() {
     if (!file || !uploadedCSVHeaders || uploadedCSVHeaders.length == 0) return
+
     setRunning(true)
     try {
       for (const input of file?.inputs) {
         await generate(input)
+        setResponseBatchDoneCount((prev) => prev + 1)
       }
       toast.success("Running batch is done")
     } catch (e) {
@@ -194,7 +193,11 @@ function RunBatch({ selectedAction }: { selectedAction: StoredAction }) {
           onClick={runActionOnBatch}
           isLoading={isRunning}
         >
-          Run Batch
+          {isRunning
+            ? `Running ${
+                file?.inputs.length! - responseBatchDoneCount
+              } Remaining`
+            : `Run Batch`}
         </Button>
         <Button
           variant="secondary"
