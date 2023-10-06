@@ -67,17 +67,18 @@ const ResponseItem = ({
         <Accordion.Item value="response">
           <Accordion.Trigger>Response</Accordion.Trigger>
           <Accordion.Content>
-            <div className="border-black/10 border-[1px] rounded-md bg-off-white p-4 h-[300px] overflow-y-auto scroll-stable scroll-smooth">
+            <div className="border-black/10 border-[1px] rounded-md bg-off-white p-4 h-fit">
               <Markdown text={actionResponse.msg} />
             </div>
           </Accordion.Content>
         </Accordion.Item>
       </Accordion.Root>
-      <div className="flex items-center gap-[20px]">
+      <div className="flex items-center gap-[10px]">
         <Button
           variant="secondary"
           onClick={async () => await regenerate(actionResponse.input)}
           icon={{ icon: RotateCw }}
+          size={"sm"}
           disabled={state === "REGENERATING"}
           isLoading={state === "REGENERATING"}
         >
@@ -87,12 +88,14 @@ const ResponseItem = ({
           variant="secondary"
           onClick={() => copyToClipboard(actionResponse.msg)}
           icon={{ icon: Copy }}
+          size={"sm"}
         >
           Copy
         </Button>
         <Button
           variant="secondary"
           icon={{ icon: isActionResponseIsSaved ? BookmarkMinus : Bookmark }}
+          size={"sm"}
           onClick={
             isActionResponseIsSaved
               ? () => unsaveResponse(actionResponse)
