@@ -25,14 +25,17 @@ export interface IKluNextContext {
     isFetching: boolean
   }
   response: {
-    actionResponses: Array<ActionResponse> | undefined
-    setActionResponses: SetState<Array<ActionResponse> | undefined>
+    actionResponses: Array<ActionResponse>
+    setActionResponses: SetState<Array<ActionResponse>>
     storedActionResponses:
       | ReturnType<typeof useLocalStorage<StoredActionResponse[]>>["data"]
       | undefined
     saveResponse: (response: ActionResponse) => void
     unsaveResponse: (response: ActionResponse) => void
-    generate: (values: any, config?: { regenerate?: boolean }) => Promise<void>
+    generate: (
+      values: any,
+      config?: { regenerate?: boolean; runBatch?: boolean }
+    ) => Promise<void>
   }
 }
 
@@ -44,7 +47,7 @@ const KluNextContextImpl = createContext<IKluNextContext>({
     isFetching: false,
   },
   response: {
-    actionResponses: undefined,
+    actionResponses: [],
     setActionResponses: () => {},
     storedActionResponses: undefined,
     saveResponse: () => {},
@@ -73,8 +76,9 @@ export default function KluProvider({
   const [selectedActionGuid, setSelectedActionGuid] =
     useState<IKluNextContext["action"]["selectedActionGuid"]>()
 
-  const [actionResponses, setActionResponses] =
-    useState<IKluNextContext["response"]["actionResponses"]>()
+  const [actionResponses, setActionResponses] = useState<
+    IKluNextContext["response"]["actionResponses"]
+  >([])
 
   const { data: storedActionResponses, save: setStoredActionResponses } =
     useLocalStorage<StoredActionResponse[]>("klu-nextjs-action-response", [])
@@ -151,7 +155,10 @@ export default function KluProvider({
     [selectedActionGuid, storedActions]
   )
 
-  const generate = async (values: any, config?: { regenerate?: boolean }) => {
+  const generate = async (
+    values: any,
+    config?: { regenerate?: boolean; runBatch?: boolean }
+  ) => {
     if (!selectedActionGuid) throw new Error("Please select action first")
     const req = await fetch(`/api/action`, {
       method: "POST",
@@ -174,21 +181,14 @@ export default function KluProvider({
       input: values,
     }
 
-    if (!actionResponses) {
-      setActionResponses([actionResponse])
-      return
-    }
-
     if (config?.regenerate) {
-      setActionResponses([
-        ...actionResponses.map((a) =>
-          a.input === values ? actionResponse : a
-        ),
+      setActionResponses((prev) => [
+        ...prev.map((a) => (a.input === values ? actionResponse : a)),
       ])
       return
     }
 
-    setActionResponses([actionResponse, ...actionResponses])
+    setActionResponses((prev) => [actionResponse, ...prev])
 
     return
   }

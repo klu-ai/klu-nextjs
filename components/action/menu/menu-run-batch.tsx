@@ -1,5 +1,6 @@
 "use client"
 
+import { useKluNext } from "@/app/provider"
 import { Button } from "@/components/ui/button"
 import * as Dropzone from "@/components/ui/dropzone"
 import useInitialChange from "@/hooks/use-initialchange"
@@ -17,6 +18,12 @@ import { useDropzone } from "react-dropzone"
 import { toast } from "sonner"
 
 function RunBatch({ selectedAction }: { selectedAction: StoredAction }) {
+  const [isRunning, setRunning] = useState(false)
+
+  const {
+    response: { generate },
+  } = useKluNext()
+
   const [selectedActionVariables, setSelectedActionVariables] =
     useInitialChange(
       selectedAction.variables.length > 0
@@ -31,6 +38,9 @@ function RunBatch({ selectedAction }: { selectedAction: StoredAction }) {
     name: File["name"]
     isUploaded: boolean
     isHeadersValid: boolean
+    inputs: Array<{
+      [key: string]: string
+    }>
   }>()
 
   const onDrop = useCallback(
@@ -63,10 +73,26 @@ function RunBatch({ selectedAction }: { selectedAction: StoredAction }) {
 
         setUploadedCSVHeaders(data[0])
 
+        const inputs: { [key: string]: string }[] = data
+          .slice(1)
+          .map((item) => {
+            const obj: { [key: string]: string } = {}
+
+            data[0].forEach((key, index) => {
+              if (item[index] !== undefined && item[index] !== "") {
+                obj[key] = item[index]
+              }
+            })
+
+            return obj
+          })
+          .filter((obj) => Object.keys(obj).length > 0)
+
         setFile({
           name: file.name,
           isUploaded: true,
           isHeadersValid,
+          inputs,
         })
 
         toast.success("File is loaded")
@@ -100,6 +126,21 @@ function RunBatch({ selectedAction }: { selectedAction: StoredAction }) {
       maxFiles: 1,
       onDrop,
     })
+
+  async function runActionOnBatch() {
+    if (!file || !uploadedCSVHeaders || uploadedCSVHeaders.length == 0) return
+    setRunning(true)
+    try {
+      for (const input of file?.inputs) {
+        await generate(input)
+      }
+      toast.success("Running batch is done")
+    } catch (e) {
+      toast.error((e as Error).message)
+    } finally {
+      setRunning(false)
+    }
+  }
 
   return (
     <div className="flex flex-col gap-[20px] my-[20px]">
@@ -145,10 +186,13 @@ function RunBatch({ selectedAction }: { selectedAction: StoredAction }) {
       </Dropzone.Root>
       <div className="flex flex-col gap-[10px]">
         <Button
-          disabled={!file?.isHeadersValid}
+          disabled={
+            !file?.isHeadersValid || file?.inputs.length === 0 || isRunning
+          }
           className="w-full"
           icon={{ icon: PlayCircle }}
-          /*       onClick={clearActionForm} */
+          onClick={runActionOnBatch}
+          isLoading={isRunning}
         >
           Run Batch
         </Button>
