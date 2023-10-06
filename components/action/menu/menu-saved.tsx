@@ -45,9 +45,9 @@ function Saved({
         >
           <Accordion.Root type="single" collapsible>
             <Accordion.Item value="item-1">
-              <Accordion.Trigger>Input</Accordion.Trigger>
-              <Accordion.Content>
-                <div className="flex flex-col gap-[5px] border-black/10 border-[1px] rounded-md bg-white p-[5px]">
+              <Accordion.Trigger className="text-sm">Input</Accordion.Trigger>
+              <Accordion.Content className="text-sm">
+                <div className="flex flex-col gap-[5px] border-black/10 border-[1px] rounded-md bg-white p-[12px]">
                   {isObject(r.input)
                     ? Object.entries(r.input).map(([key, value]) => (
                         <div
@@ -67,8 +67,10 @@ function Saved({
           </Accordion.Root>
           <Accordion.Root type="single" collapsible>
             <Accordion.Item value="item-1">
-              <Accordion.Trigger>Response</Accordion.Trigger>
-              <Accordion.Content>
+              <Accordion.Trigger className="text-sm">
+                Response
+              </Accordion.Trigger>
+              <Accordion.Content className="text-sm">
                 <div className="border-black/10 border-[1px] rounded-md bg-white p-4 h-[300px] overflow-y-auto scroll-stable scroll-smooth">
                   <Markdown text={r.msg} />
                 </div>
