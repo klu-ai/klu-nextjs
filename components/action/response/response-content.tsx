@@ -5,9 +5,12 @@ import { Button } from "@/components/ui/button"
 import { Markdown } from "@/components/ui/markdown"
 import useCheckIfActionResponseIsSaved from "@/hooks/use-actionresponse"
 import { ActionResponse } from "@/types"
-import { Bookmark, BookmarkMinus, RotateCw } from "lucide-react"
+import { Bookmark, BookmarkMinus, Copy, RotateCw } from "lucide-react"
 import { useState } from "react"
 import { toast } from "sonner"
+import * as Accordion from "@/components/ui/accordion"
+import { copyToClipboard, isObject } from "@/utils"
+import { Code } from "@/components/ui/markdown/code-block"
 
 const ResponseItem = ({
   actionResponse,
@@ -42,13 +45,34 @@ const ResponseItem = ({
   }
 
   return (
-    <>
-      <div
-        key={actionResponse.actionGuid}
-        className="border-black/10 border-[1px] rounded-md bg-white p-4"
-      >
-        <Markdown text={actionResponse.msg} />
-      </div>
+    <div className="border-black/10 border-[1px] rounded-md bg-white p-4">
+      <Accordion.Root type="single" collapsible>
+        <Accordion.Item value="input">
+          <Accordion.Trigger>Input</Accordion.Trigger>
+          <Accordion.Content>
+            <div className="flex flex-col gap-[5px] border-black/10 border-[1px] rounded-md bg-off-white p-[12px]">
+              {isObject(actionResponse.input)
+                ? Object.entries(actionResponse.input).map(([key, value]) => (
+                    <div key={key} className="flex w-full flex-col gap-[3px]">
+                      <Code className="text-[10px] w-fit lowercase">{key}</Code>
+                      <p className="text-[12px] h-fit">{value}</p>
+                    </div>
+                  ))
+                : actionResponse.input}
+            </div>
+          </Accordion.Content>
+        </Accordion.Item>
+      </Accordion.Root>
+      <Accordion.Root type="single" defaultValue="response" collapsible>
+        <Accordion.Item value="response">
+          <Accordion.Trigger>Response</Accordion.Trigger>
+          <Accordion.Content>
+            <div className="border-black/10 border-[1px] rounded-md bg-off-white p-4 h-[300px] overflow-y-auto scroll-stable scroll-smooth">
+              <Markdown text={actionResponse.msg} />
+            </div>
+          </Accordion.Content>
+        </Accordion.Item>
+      </Accordion.Root>
       <div className="flex items-center gap-[20px]">
         <Button
           variant="secondary"
@@ -58,6 +82,13 @@ const ResponseItem = ({
           isLoading={state === "REGENERATING"}
         >
           {state === "REGENERATING" ? "Regenerating" : "Regenerate"}
+        </Button>
+        <Button
+          variant="secondary"
+          onClick={() => copyToClipboard(actionResponse.msg)}
+          icon={{ icon: Copy }}
+        >
+          Copy
         </Button>
         <Button
           variant="secondary"
@@ -71,7 +102,7 @@ const ResponseItem = ({
           {isActionResponseIsSaved ? "Unsave" : "Save"}
         </Button>
       </div>
-    </>
+    </div>
   )
 }
 
