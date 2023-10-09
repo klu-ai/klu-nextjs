@@ -17,6 +17,8 @@ import { now } from "@/utils"
 
 type SetState<T> = React.Dispatch<SetStateAction<T>>
 
+export type AppStateType = "run-once" | "run-batch" | "saved"
+
 export interface IKluNextContext {
   action: {
     selectedActionGuid: string | undefined
@@ -37,6 +39,10 @@ export interface IKluNextContext {
       config?: { regenerate?: boolean; runBatch?: boolean }
     ) => Promise<void>
   }
+  state: {
+    value: AppStateType
+    setValue: SetState<AppStateType>
+  }
 }
 
 const KluNextContextImpl = createContext<IKluNextContext>({
@@ -54,6 +60,10 @@ const KluNextContextImpl = createContext<IKluNextContext>({
     unsaveResponse: () => {},
     generate: async () => {},
   },
+  state: {
+    value: "run-once",
+    setValue: () => {},
+  },
 })
 
 export function useKluNext() {
@@ -70,6 +80,9 @@ export default function KluProvider({
   >("klu-nextjs-actions", [])
   const { data: storedSelectedActionGuid, save: storeSelectedActionGuid } =
     useLocalStorage<string>("klu-nextjs-selected-action", "")
+
+  const { data: stateValue, save: setStateValue } =
+    useLocalStorage<AppStateType>("klu-nextjs-state", "run-once")
 
   const [selectedAction, setSelectedAction] = useState<StoredAction>()
 
@@ -222,6 +235,10 @@ export default function KluProvider({
           saveResponse,
           unsaveResponse,
           generate,
+        },
+        state: {
+          value: stateValue,
+          setValue: setStateValue,
         },
       }}
     >
