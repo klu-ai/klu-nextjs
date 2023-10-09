@@ -131,9 +131,11 @@ function RunBatch({ selectedAction }: { selectedAction: StoredAction }) {
 
     setRunning(true)
     try {
-      const batchSize = 5
+      const batchSize = 10
       const totalBatches = Math.ceil(file.inputs.length / batchSize)
-
+      /*       const batchedResponses: IKluNextContext["response"]["actionResponses"] =
+        []
+ */
       for (let i = 0; i < totalBatches; i++) {
         const startIndex = i * batchSize
         const endIndex = startIndex + batchSize
@@ -143,7 +145,7 @@ function RunBatch({ selectedAction }: { selectedAction: StoredAction }) {
           batchInputs.map(async (value) => {
             const response = await fetchActionResponse<
               Omit<ActionResponse, "actionGuid" | "input">
-            >(selectedAction.guid, batchInputs)
+            >(selectedAction.guid, value)
             const actionResponse: ActionResponse = {
               ...response,
               actionGuid: selectedAction.guid,
