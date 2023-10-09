@@ -12,7 +12,7 @@ import {
 } from "react"
 import { Toaster, toast } from "sonner"
 import { env } from "@/env.mjs"
-import { fetchAction } from "@/utils/klu"
+import { fetchAction, fetchActionResponse } from "@/utils/klu"
 import { now } from "@/utils"
 
 type SetState<T> = React.Dispatch<SetStateAction<T>>
@@ -160,18 +160,8 @@ export default function KluProvider({
     config?: { regenerate?: boolean; runBatch?: boolean }
   ) => {
     if (!selectedActionGuid) throw new Error("Please select action first")
-    const req = await fetch(`/api/action`, {
-      method: "POST",
-      body: JSON.stringify({
-        id: selectedActionGuid,
-        input: values,
-      }),
-    })
 
-    const res = (await req.json()) as unknown as Omit<
-      ActionResponse,
-      "actionGuid" | "input"
-    >
+    const res = await fetchActionResponse(selectedActionGuid, values)
 
     if (!res.data_guid) throw new Error("There's an error")
 

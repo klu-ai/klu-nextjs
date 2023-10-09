@@ -71,3 +71,20 @@ export const fetchAction = async (actionGuid: string) => {
   const res = (await req.json()) as unknown as Action
   return res
 }
+
+export const fetchActionResponse = async (actionGuid: string, values: any) => {
+  const req = await fetch(`/api/action`, {
+    method: "POST",
+    body: JSON.stringify({
+      id: actionGuid,
+      input: values,
+    }),
+  })
+
+  const res = (await req.json()) as unknown as Omit<
+    ActionResponse,
+    "actionGuid" | "input"
+  >
+
+  return res
+}
