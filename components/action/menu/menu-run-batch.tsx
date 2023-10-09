@@ -193,7 +193,7 @@ function RunBatch({ selectedAction }: { selectedAction: StoredAction }) {
           onClick={runActionOnBatch}
           isLoading={isRunning}
         >
-          {file?.inputs
+          {file?.inputs && !isRunning
             ? `Run ${file.inputs.length} Inputs`
             : isRunning
             ? `Running ${
@@ -203,7 +203,7 @@ function RunBatch({ selectedAction }: { selectedAction: StoredAction }) {
         </Button>
         <Button
           variant="secondary"
-          disabled={!file}
+          disabled={!file || isRunning}
           className="w-full"
           icon={{ icon: Trash }}
           onClick={() => setFile(undefined)}
