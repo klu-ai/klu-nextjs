@@ -1,4 +1,5 @@
 import { Action, ActionResponse, StoredActionResponse } from "@/types"
+import { handleClientError } from "./error"
 
 export const getVariables = (prompt: string): string[] => {
   const regex = /\{\{(.+?)\}\}/g
@@ -67,7 +68,32 @@ export const checkIfActionResponseIsSaved = (
 }
 
 export const fetchAction = async (actionGuid: string) => {
-  const req = await fetch(`/api/action?id=${actionGuid}`)
-  const res = (await req.json()) as unknown as Action
-  return res
+  try {
+    const req = await fetch(`/api/action?id=${actionGuid}`)
+    const res = (await req.json()) as unknown as Action
+    return res
+  } catch (err) {
+    return handleClientError(err)
+  }
+}
+
+export const fetchActionResponse = async <T>(
+  actionGuid: string,
+  values: any
+) => {
+  try {
+    const req = await fetch(`/api/action`, {
+      method: "POST",
+      body: JSON.stringify({
+        id: actionGuid,
+        input: values,
+      }),
+    })
+
+    const res = (await req.json()) as unknown as T
+
+    return res
+  } catch (err) {
+    return handleClientError(err)
+  }
 }

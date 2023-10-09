@@ -54,7 +54,7 @@ function Saved({
                           key={key}
                           className="flex w-full flex-col gap-[3px]"
                         >
-                          <Code className="text-[10px] w-fit lowercase">
+                          <Code className="text-[10px] w-fit lowercase p-[1px]">
                             {key}
                           </Code>
                           <p className="text-[12px] h-fit">{value}</p>

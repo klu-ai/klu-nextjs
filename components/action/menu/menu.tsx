@@ -1,6 +1,6 @@
 "use client"
 
-import { useKluNext } from "@/app/provider"
+import { AppStateType, useKluNext } from "@/app/provider"
 import { Skeleton } from "@/components/ui/skeleton"
 import * as Tabs from "@/components/ui/tabs"
 import useMounted from "@/hooks/use-mounted"
@@ -12,6 +12,7 @@ function MenuAndContent() {
   const {
     action: { selectedAction },
     response,
+    state: { value: stateValue, setValue: setStateValue },
   } = useKluNext()
 
   const isMounted = useMounted()
@@ -43,7 +44,11 @@ function MenuAndContent() {
     )
 
   return (
-    <Tabs.Root defaultValue="run-once" className="w-full h-full">
+    <Tabs.Root
+      defaultValue={stateValue}
+      className="w-full h-full"
+      onValueChange={(value) => setStateValue(value as AppStateType)}
+    >
       <Tabs.List>
         <Tabs.Trigger value="run-once">Run Once</Tabs.Trigger>
         <Tabs.Trigger value="run-batch">Run Batch</Tabs.Trigger>

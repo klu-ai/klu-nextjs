@@ -12,10 +12,12 @@ import {
 } from "react"
 import { Toaster, toast } from "sonner"
 import { env } from "@/env.mjs"
-import { fetchAction } from "@/utils/klu"
+import { fetchAction, fetchActionResponse } from "@/utils/klu"
 import { now } from "@/utils"
 
 type SetState<T> = React.Dispatch<SetStateAction<T>>
+
+export type AppStateType = "run-once" | "run-batch" | "saved"
 
 export interface IKluNextContext {
   action: {
@@ -37,6 +39,10 @@ export interface IKluNextContext {
       config?: { regenerate?: boolean; runBatch?: boolean }
     ) => Promise<void>
   }
+  state: {
+    value: AppStateType
+    setValue: SetState<AppStateType>
+  }
 }
 
 const KluNextContextImpl = createContext<IKluNextContext>({
@@ -54,6 +60,10 @@ const KluNextContextImpl = createContext<IKluNextContext>({
     unsaveResponse: () => {},
     generate: async () => {},
   },
+  state: {
+    value: "run-once",
+    setValue: () => {},
+  },
 })
 
 export function useKluNext() {
@@ -70,6 +80,9 @@ export default function KluProvider({
   >("klu-nextjs-actions", [])
   const { data: storedSelectedActionGuid, save: storeSelectedActionGuid } =
     useLocalStorage<string>("klu-nextjs-selected-action", "")
+
+  const { data: stateValue, save: setStateValue } =
+    useLocalStorage<AppStateType>("klu-nextjs-state", "run-once")
 
   const [selectedAction, setSelectedAction] = useState<StoredAction>()
 
@@ -160,18 +173,10 @@ export default function KluProvider({
     config?: { regenerate?: boolean; runBatch?: boolean }
   ) => {
     if (!selectedActionGuid) throw new Error("Please select action first")
-    const req = await fetch(`/api/action`, {
-      method: "POST",
-      body: JSON.stringify({
-        id: selectedActionGuid,
-        input: values,
-      }),
-    })
 
-    const res = (await req.json()) as unknown as Omit<
-      ActionResponse,
-      "actionGuid" | "input"
-    >
+    const res = await fetchActionResponse<
+      Omit<ActionResponse, "actionGuid" | "input">
+    >(selectedActionGuid, values)
 
     if (!res.data_guid) throw new Error("There's an error")
 
@@ -230,6 +235,10 @@ export default function KluProvider({
           saveResponse,
           unsaveResponse,
           generate,
+        },
+        state: {
+          value: stateValue,
+          setValue: setStateValue,
         },
       }}
     >
