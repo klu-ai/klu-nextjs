@@ -23,7 +23,7 @@ function RunBatch({ selectedAction }: { selectedAction: StoredAction }) {
   const [isRunning, setRunning] = useState(false)
 
   const {
-    response: { generate, setActionResponses },
+    response: { setActionResponses },
   } = useKluNext()
 
   const [responseBatchDoneCount, setResponseBatchDoneCount] = useState(0)
@@ -131,17 +131,15 @@ function RunBatch({ selectedAction }: { selectedAction: StoredAction }) {
 
     setRunning(true)
     try {
-      const batchSize = 10
+      const batchSize = 5
       const totalBatches = Math.ceil(file.inputs.length / batchSize)
-      /*       const batchedResponses: IKluNextContext["response"]["actionResponses"] =
-        []
- */
+
       for (let i = 0; i < totalBatches; i++) {
         const startIndex = i * batchSize
         const endIndex = startIndex + batchSize
         const batchInputs = file.inputs.slice(startIndex, endIndex)
 
-        const batchResponses = await Promise.all(
+        await Promise.allSettled(
           batchInputs.map(async (value) => {
             const response = await fetchActionResponse<
               Omit<ActionResponse, "actionGuid" | "input">
@@ -152,12 +150,13 @@ function RunBatch({ selectedAction }: { selectedAction: StoredAction }) {
               input: value as any,
             }
 
+            setResponseBatchDoneCount((prev) => prev + 1)
+
+            setActionResponses((prev) => [actionResponse, ...prev])
+
             return actionResponse
           })
         )
-
-        setResponseBatchDoneCount((prev) => prev + batchResponses.length)
-        setActionResponses((prev) => [...batchResponses, ...prev])
       }
     } catch (error) {
       return handleClientError(error)
