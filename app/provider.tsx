@@ -161,7 +161,9 @@ export default function KluProvider({
   ) => {
     if (!selectedActionGuid) throw new Error("Please select action first")
 
-    const res = await fetchActionResponse(selectedActionGuid, values)
+    const res = await fetchActionResponse<
+      Omit<ActionResponse, "actionGuid" | "input">
+    >(selectedActionGuid, values)
 
     if (!res.data_guid) throw new Error("There's an error")
 

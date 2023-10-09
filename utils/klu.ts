@@ -77,7 +77,10 @@ export const fetchAction = async (actionGuid: string) => {
   }
 }
 
-export const fetchActionResponse = async (actionGuid: string, values: any) => {
+export const fetchActionResponse = async <T>(
+  actionGuid: string,
+  values: any
+) => {
   try {
     const req = await fetch(`/api/action`, {
       method: "POST",
@@ -87,10 +90,7 @@ export const fetchActionResponse = async (actionGuid: string, values: any) => {
       }),
     })
 
-    const res = (await req.json()) as unknown as Omit<
-      ActionResponse,
-      "actionGuid" | "input"
-    >
+    const res = (await req.json()) as unknown as T
 
     return res
   } catch (err) {

@@ -1,10 +1,12 @@
 "use client"
 
-import { useKluNext } from "@/app/provider"
+import { IKluNextContext, useKluNext } from "@/app/provider"
 import { Button } from "@/components/ui/button"
 import * as Dropzone from "@/components/ui/dropzone"
 import useInitialChange from "@/hooks/use-initialchange"
-import { StoredAction } from "@/types"
+import { ActionResponse, StoredAction } from "@/types"
+import { handleClientError } from "@/utils/error"
+import { fetchActionResponse } from "@/utils/klu"
 import {
   CheckCircle,
   CircleDashed,
@@ -21,7 +23,7 @@ function RunBatch({ selectedAction }: { selectedAction: StoredAction }) {
   const [isRunning, setRunning] = useState(false)
 
   const {
-    response: { generate },
+    response: { generate, setActionResponses },
   } = useKluNext()
 
   const [responseBatchDoneCount, setResponseBatchDoneCount] = useState(0)
@@ -129,15 +131,34 @@ function RunBatch({ selectedAction }: { selectedAction: StoredAction }) {
 
     setRunning(true)
     try {
-      for (const input of file?.inputs) {
-        await generate(input)
-        setResponseBatchDoneCount((prev) => prev + 1)
+      const batchSize = 5
+      const totalBatches = Math.ceil(file.inputs.length / batchSize)
+
+      for (let i = 0; i < totalBatches; i++) {
+        const startIndex = i * batchSize
+        const endIndex = startIndex + batchSize
+        const batchInputs = file.inputs.slice(startIndex, endIndex)
+
+        const batchResponses = await Promise.all(
+          batchInputs.map(async (value) => {
+            const response = await fetchActionResponse<
+              Omit<ActionResponse, "actionGuid" | "input">
+            >(selectedAction.guid, batchInputs)
+            const actionResponse: ActionResponse = {
+              ...response,
+              actionGuid: selectedAction.guid,
+              input: value as any,
+            }
+
+            return actionResponse
+          })
+        )
+
+        setResponseBatchDoneCount((prev) => prev + batchResponses.length)
+        setActionResponses((prev) => [...batchResponses, ...prev])
       }
-      toast.success("Running batch is done")
-    } catch (e) {
-      toast.error((e as Error).message)
-    } finally {
-      setRunning(false)
+    } catch (error) {
+      return handleClientError(error)
     }
   }
 
