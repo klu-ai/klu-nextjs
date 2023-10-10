@@ -15,6 +15,7 @@ export async function GET(req: NextRequest) {
       }
     )
   } catch (err) {
+    console.error(err)
     return NextResponse.json(
       {},
       { status: 500, statusText: (err as Error).message }
@@ -40,6 +41,7 @@ export async function POST(req: NextRequest) {
 
     return new Response(stream) */
   } catch (err) {
+    console.error(err)
     return NextResponse.json(
       {},
       { status: 500, statusText: (err as Error).message }
