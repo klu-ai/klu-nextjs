@@ -5,29 +5,38 @@ import { Button } from "@/components/ui/button"
 import { Markdown } from "@/components/ui/markdown"
 import useCheckIfActionResponseIsSaved from "@/hooks/use-actionresponse"
 import { ActionResponse } from "@/types"
-import { Bookmark, BookmarkMinus, Copy, RotateCw } from "lucide-react"
+import {
+  Bookmark,
+  BookmarkMinus,
+  Copy,
+  RotateCw,
+  ThumbsDown,
+  ThumbsUp,
+} from "lucide-react"
 import { memo, useState } from "react"
 import { toast } from "sonner"
 import * as Accordion from "@/components/ui/accordion"
 import { copyToClipboard, isObject } from "@/utils"
 import { Code } from "@/components/ui/markdown/code-block"
+import { postActionResponseFeedback } from "@/utils/klu"
 
 const ResponseItem = memo(
   ({
     actionResponse,
     appState,
-    storedActionResponses,
-    generate,
-    saveResponse,
-    unsaveResponse,
   }: {
     actionResponse: ActionResponse
     appState: IKluNextContext["state"]["value"]
-    storedActionResponses: IKluNextContext["response"]["storedActionResponses"]
-    generate: IKluNextContext["response"]["generate"]
-    saveResponse: IKluNextContext["response"]["saveResponse"]
-    unsaveResponse: IKluNextContext["response"]["unsaveResponse"]
   }) => {
+    const {
+      response: {
+        storedActionResponses,
+        generate,
+        saveResponse,
+        unsaveResponse,
+      },
+    } = useKluNext()
+
     const [state, setState] = useState<"IDLE" | "REGENERATING">("IDLE")
 
     const { isActionResponseIsSaved } = useCheckIfActionResponseIsSaved(
@@ -41,10 +50,16 @@ const ResponseItem = memo(
         await generate(input, { regenerate: true })
         toast.success("Response is regenerated")
       } catch (e) {
-        toast.error((e as Error).message)
       } finally {
         setState("IDLE")
       }
+    }
+
+    async function sendFeedback(type: "positive" | "negative") {
+      toast.message("Thank you for your feedback")
+      try {
+        await postActionResponseFeedback(type, actionResponse.data_guid)
+      } catch (e) {}
     }
 
     return (
@@ -82,37 +97,57 @@ const ResponseItem = memo(
             </Accordion.Content>
           </Accordion.Item>
         </Accordion.Root>
-        <div className="flex items-center gap-[10px]">
-          <Button
-            variant="secondary"
-            onClick={async () => await regenerate(actionResponse.input)}
-            icon={{ icon: RotateCw }}
-            size={"sm"}
-            disabled={state === "REGENERATING"}
-            isLoading={state === "REGENERATING"}
-          >
-            {state === "REGENERATING" ? "Regenerating" : "Regenerate"}
-          </Button>
-          <Button
-            variant="secondary"
-            onClick={() => copyToClipboard(actionResponse.msg)}
-            icon={{ icon: Copy }}
-            size={"sm"}
-          >
-            Copy
-          </Button>
-          <Button
-            variant="secondary"
-            icon={{ icon: isActionResponseIsSaved ? BookmarkMinus : Bookmark }}
-            size={"sm"}
-            onClick={
-              isActionResponseIsSaved
-                ? () => unsaveResponse(actionResponse)
-                : () => saveResponse(actionResponse)
-            }
-          >
-            {isActionResponseIsSaved ? "Unsave" : "Save"}
-          </Button>
+        <div className="flex justify-between w-full">
+          <div className="flex items-center gap-[10px]">
+            <Button
+              variant="secondary"
+              onClick={async () => await regenerate(actionResponse.input)}
+              icon={{ icon: RotateCw }}
+              size={"sm"}
+              disabled={state === "REGENERATING"}
+              isLoading={state === "REGENERATING"}
+            >
+              {state === "REGENERATING" ? "Regenerating" : "Regenerate"}
+            </Button>
+            <Button
+              variant="secondary"
+              onClick={() => copyToClipboard(actionResponse.msg)}
+              icon={{ icon: Copy }}
+              size={"sm"}
+            >
+              Copy
+            </Button>
+            <Button
+              variant="secondary"
+              icon={{
+                icon: isActionResponseIsSaved ? BookmarkMinus : Bookmark,
+              }}
+              size={"sm"}
+              onClick={
+                isActionResponseIsSaved
+                  ? () => unsaveResponse(actionResponse)
+                  : () => saveResponse(actionResponse)
+              }
+            >
+              {isActionResponseIsSaved ? "Unsave" : "Save"}
+            </Button>
+          </div>
+          <div className="flex items-center gap-[10px]">
+            <Button
+              variant="secondary"
+              onClick={async () => await sendFeedback("positive")}
+              icon={{ icon: ThumbsUp }}
+              size={"sm"}
+              disabled={state === "REGENERATING"}
+              isLoading={state === "REGENERATING"}
+            />
+            <Button
+              variant="secondary"
+              onClick={async () => await sendFeedback("positive")}
+              icon={{ icon: ThumbsDown }}
+              size={"sm"}
+            />
+          </div>
         </div>
       </div>
     )
@@ -123,19 +158,13 @@ ResponseItem.displayName = "ResponseItem"
 
 const Content = () => {
   const {
-    response: {
-      actionResponses,
-      storedActionResponses,
-      generate,
-      saveResponse,
-      unsaveResponse,
-    },
+    response: { actionResponses },
     state: { value: stateValue },
   } = useKluNext()
 
   if (!actionResponses || actionResponses?.length === 0)
     return (
-      <div className="m-auto text-center gap-[10px]">
+      <div className="m-auto text-center gap-[10px] xl:py-0 py-[40px]">
         <p className="text-[14px] font-medium opacity-80">No Response</p>
         <p className="text-[14px] opacity-50">
           Please run your action first to be able to see the response
@@ -146,12 +175,8 @@ const Content = () => {
   return actionResponses.map((ar) => (
     <ResponseItem
       key={ar.actionGuid}
-      appState={stateValue}
       actionResponse={ar}
-      generate={generate}
-      saveResponse={saveResponse}
-      unsaveResponse={unsaveResponse}
-      storedActionResponses={storedActionResponses}
+      appState={stateValue}
     />
   ))
 }

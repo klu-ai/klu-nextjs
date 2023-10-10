@@ -6,7 +6,13 @@ const Root = ({
   ...props
 }: React.HTMLAttributes<HTMLDivElement>) => {
   return (
-    <main className={cn("flex min-h-screen flex-row", className)} {...props}>
+    <main
+      className={cn(
+        "flex xl:min-h-screen xl:flex-row flex-col bg-off-white",
+        className
+      )}
+      {...props}
+    >
       {children}
     </main>
   )

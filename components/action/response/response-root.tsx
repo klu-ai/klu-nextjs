@@ -8,7 +8,7 @@ const Root = ({
   return (
     <section
       className={cn(
-        "w-2/3 border-r-black/10 border-r-[1px] bg-off-white text-black p-12 flex flex-col gap-[20px] overflow-y-auto h-screen",
+        "xl:w-2/3 w-full border-r-black/10 border-r-[1px] bg-off-white text-black md:p-12 p-6  flex flex-col gap-[20px] overflow-y-auto xl:h-screen h-full xl:border-t-[0px] border-t-[1px] border-t-black/10",
         className
       )}
       {...props}

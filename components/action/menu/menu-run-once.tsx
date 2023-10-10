@@ -65,7 +65,6 @@ function RunOnce({ selectedAction }: { selectedAction: StoredAction }) {
     try {
       await generate(values.input ?? values)
     } catch (e) {
-      toast.error((e as Error).message)
     } finally {
       setRunning(false)
     }

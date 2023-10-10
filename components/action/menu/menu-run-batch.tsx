@@ -6,7 +6,7 @@ import * as Dropzone from "@/components/ui/dropzone"
 import useInitialChange from "@/hooks/use-initialchange"
 import { ActionResponse, StoredAction } from "@/types"
 import { handleClientError } from "@/utils/error"
-import { fetchActionResponse } from "@/utils/klu"
+import { postActionResponse } from "@/utils/klu"
 import {
   CheckCircle,
   CircleDashed,
@@ -141,7 +141,7 @@ function RunBatch({ selectedAction }: { selectedAction: StoredAction }) {
 
         await Promise.allSettled(
           batchInputs.map(async (value) => {
-            const response = await fetchActionResponse<
+            const response = await postActionResponse<
               Omit<ActionResponse, "actionGuid" | "input">
             >(selectedAction.guid, value)
             const actionResponse: ActionResponse = {

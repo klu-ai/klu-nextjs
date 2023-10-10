@@ -12,7 +12,7 @@ import {
 } from "react"
 import { Toaster, toast } from "sonner"
 import { env } from "@/env.mjs"
-import { fetchAction, fetchActionResponse } from "@/utils/klu"
+import { fetchAction, postActionResponse } from "@/utils/klu"
 import { now } from "@/utils"
 
 type SetState<T> = React.Dispatch<SetStateAction<T>>
@@ -130,7 +130,7 @@ export default function KluProvider({
         storeActions((prev) => [initialAction, ...prev])
         setSelectedActionGuid(initialActionGuid)
       })
-      .catch((e) => toast.error((e as Error).message))
+      .catch((e: Error) => {})
       .finally(() => setFetchingAction(false))
   }, [])
 
@@ -174,7 +174,7 @@ export default function KluProvider({
   ) => {
     if (!selectedActionGuid) throw new Error("Please select action first")
 
-    const res = await fetchActionResponse<
+    const res = await postActionResponse<
       Omit<ActionResponse, "actionGuid" | "input">
     >(selectedActionGuid, values)
 
