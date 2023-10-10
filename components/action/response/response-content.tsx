@@ -49,7 +49,6 @@ const ResponseItem = memo(
         await generate(input, { regenerate: true })
         toast.success("Response is regenerated")
       } catch (e) {
-        toast.error((e as Error).message)
       } finally {
         setState("IDLE")
       }
