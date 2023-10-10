@@ -80,7 +80,7 @@ export const fetchAction = async (actionGuid: string) => {
   }
 }
 
-export const fetchActionResponse = async <T>(
+export const postActionResponse = async <T>(
   actionGuid: string,
   values: any
 ) => {
