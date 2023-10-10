@@ -130,7 +130,7 @@ export default function KluProvider({
         storeActions((prev) => [initialAction, ...prev])
         setSelectedActionGuid(initialActionGuid)
       })
-      .catch(e)
+      .catch((e: Error) => {})
       .finally(() => setFetchingAction(false))
   }, [])
 
