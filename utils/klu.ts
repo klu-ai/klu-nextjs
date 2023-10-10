@@ -70,6 +70,9 @@ export const checkIfActionResponseIsSaved = (
 export const fetchAction = async (actionGuid: string) => {
   try {
     const req = await fetch(`/api/action?id=${actionGuid}`)
+    if (req.status === 500) {
+      throw new Error(req.statusText)
+    }
     const res = (await req.json()) as unknown as Action
     return res
   } catch (err) {
@@ -89,6 +92,10 @@ export const fetchActionResponse = async <T>(
         input: values,
       }),
     })
+
+    if (req.status === 500) {
+      throw new Error(req.statusText)
+    }
 
     const res = (await req.json()) as unknown as T
 
