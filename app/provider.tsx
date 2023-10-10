@@ -130,7 +130,7 @@ export default function KluProvider({
         storeActions((prev) => [initialAction, ...prev])
         setSelectedActionGuid(initialActionGuid)
       })
-      .catch((e) => toast.error((e as Error).message))
+      .catch(e)
       .finally(() => setFetchingAction(false))
   }, [])
 
