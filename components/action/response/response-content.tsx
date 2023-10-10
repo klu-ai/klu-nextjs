@@ -164,7 +164,7 @@ const Content = () => {
 
   if (!actionResponses || actionResponses?.length === 0)
     return (
-      <div className="m-auto text-center gap-[10px]">
+      <div className="m-auto text-center gap-[10px] xl:py-0 py-[40px]">
         <p className="text-[14px] font-medium opacity-80">No Response</p>
         <p className="text-[14px] opacity-50">
           Please run your action first to be able to see the response
