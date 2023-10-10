@@ -18,6 +18,7 @@ import { toast } from "sonner"
 import * as Accordion from "@/components/ui/accordion"
 import { copyToClipboard, isObject } from "@/utils"
 import { Code } from "@/components/ui/markdown/code-block"
+import { postActionResponseFeedback } from "@/utils/klu"
 
 const ResponseItem = memo(
   ({
@@ -52,6 +53,13 @@ const ResponseItem = memo(
       } finally {
         setState("IDLE")
       }
+    }
+
+    async function sendFeedback(type: "positive" | "negative") {
+      toast.message("Thank you for your feedback")
+      try {
+        await postActionResponseFeedback(type, actionResponse.actionGuid)
+      } catch (e) {}
     }
 
     return (
@@ -127,7 +135,7 @@ const ResponseItem = memo(
           <div className="flex items-center gap-[10px]">
             <Button
               variant="secondary"
-              onClick={async () => await regenerate(actionResponse.input)}
+              onClick={async () => await sendFeedback("positive")}
               icon={{ icon: ThumbsUp }}
               size={"sm"}
               disabled={state === "REGENERATING"}
@@ -135,7 +143,7 @@ const ResponseItem = memo(
             />
             <Button
               variant="secondary"
-              onClick={() => copyToClipboard(actionResponse.msg)}
+              onClick={async () => await sendFeedback("positive")}
               icon={{ icon: ThumbsDown }}
               size={"sm"}
             />

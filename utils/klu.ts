@@ -1,5 +1,7 @@
 import { Action, ActionResponse, StoredActionResponse } from "@/types"
 import { handleClientError } from "./error"
+import { WithPersistedModelData } from "@kluai/core/dist/cjs/common/models"
+import { FeedbackModel } from "@kluai/core/dist/cjs/feedback/models"
 
 export const getVariables = (prompt: string): string[] => {
   const regex = /\{\{(.+?)\}\}/g
@@ -98,6 +100,31 @@ export const postActionResponse = async <T>(
     }
 
     const res = (await req.json()) as unknown as T
+
+    return res
+  } catch (err) {
+    return handleClientError(err)
+  }
+}
+
+export const postActionResponseFeedback = async (
+  type: "positive" | "negative",
+  actionGuid: string
+) => {
+  try {
+    const req = await fetch(`/api/feedback`, {
+      method: "POST",
+      body: JSON.stringify({
+        id: actionGuid,
+        type,
+      }),
+    })
+
+    if (req.status === 500) {
+      throw new Error(req.statusText)
+    }
+
+    const res = (await req.json()) as WithPersistedModelData<FeedbackModel>
 
     return res
   } catch (err) {
