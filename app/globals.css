@@ -6,6 +6,12 @@ body {
   @apply bg-off-white;
 }
 
+button#action-select > span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .scroll-stable {
   scrollbar-gutter: stable;
 }

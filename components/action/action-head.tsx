@@ -84,6 +84,7 @@ function Head() {
           >
             <Select.Trigger
               className="w-full"
+              id="action-select"
               isLoading={isFetching}
               disabled={isFetching}
               aria-disabled={isFetching}
