@@ -58,7 +58,7 @@ const ResponseItem = memo(
     async function sendFeedback(type: "positive" | "negative") {
       toast.message("Thank you for your feedback")
       try {
-        await postActionResponseFeedback(type, actionResponse.actionGuid)
+        await postActionResponseFeedback(type, actionResponse.data_guid)
       } catch (e) {}
     }
 
