@@ -1,5 +1,5 @@
 <a href="https://klu-nextjs.vercel.app/">
-  <img alt="Klu SDK Next.js App Cover" src="app/og.png">
+  <img alt="Klu SDK Next.js App Cover" src="public/og.png">
   <h1 align="center">Klu SDK Next.js Example App</h1>
 </a>
 
