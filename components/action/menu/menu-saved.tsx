@@ -7,7 +7,7 @@ import { Markdown } from "@/components/ui/markdown"
 import { Code } from "@/components/ui/markdown/code-block"
 import useInitialChange from "@/hooks/use-initialchange"
 import { copyToClipboard, isObject } from "@/utils"
-import { BookmarkMinus, Copy, Save } from "lucide-react"
+import { Bookmark, BookmarkMinus, Copy } from "lucide-react"
 
 function Saved({
   response: { storedActionResponses, unsaveResponse },
@@ -27,7 +27,7 @@ function Saved({
       <div className="flex flex-col items-center justify-center h-[400px]">
         <div className="flex flex-col gap-[10px] m-auto text-center w-2/3">
           <div className="flex justify-center mb-4">
-            <Save className="inline-grid"/>
+            <Bookmark className="inline-grid"/>
           </div>
           <p className="text-[14px] font-medium opacity-80">
             Your Saved Generations
