@@ -25,6 +25,8 @@ export type ActionResponse = {
   streaming: boolean
   actionGuid: string
   input: string
+  isPositive?: boolean
+  isNegative?: boolean
 }
 
 export type StoredActionResponse = Omit<Stored<ActionResponse>, "revalidatedAt">

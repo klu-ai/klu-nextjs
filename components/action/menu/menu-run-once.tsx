@@ -20,7 +20,7 @@ function RunOnce({ selectedAction }: { selectedAction: StoredAction }) {
     response: { generate },
   } = useKluNext()
 
-  const [actionHaveVariables, setActionHaveVariables] = useInitialChange(
+  const [actionHaveVariables] = useInitialChange(
     selectedAction.variables.length > 0,
     [selectedAction]
   )
