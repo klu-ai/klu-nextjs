@@ -171,7 +171,7 @@ const Content = () => {
         </div>
         <p className="text-[14px] font-medium opacity-80">Generate with Klu</p>
         <p className="text-[14px] opacity-50">
-          Actions generations will appear here
+          Action generations will appear here
         </p>
       </div>
     )
