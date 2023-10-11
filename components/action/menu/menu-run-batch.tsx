@@ -1,6 +1,6 @@
 "use client"
 
-import { IKluNextContext, useKluNext } from "@/app/provider"
+import { useKluNext } from "@/app/provider"
 import { Button } from "@/components/ui/button"
 import * as Dropzone from "@/components/ui/dropzone"
 import useInitialChange from "@/hooks/use-initialchange"
