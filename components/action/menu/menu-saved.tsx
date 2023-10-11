@@ -25,9 +25,9 @@ function Saved({
   if (!storedActionResponses || selectedStoredActionResponses.length === 0)
     return (
       <div className="flex flex-col items-center justify-center h-[400px]">
-        <div className="flex flex-col gap-[10px] m-auto text-center w-2/3">
+        <div className="flex flex-col gap-[5px] m-auto text-center w-2/3">
           <div className="flex justify-center mb-4">
-            <Bookmark className="inline-grid"/>
+            <Bookmark className="inline-grid opacity-50" />
           </div>
           <p className="text-[14px] font-medium opacity-80">
             Your Saved Generations

@@ -168,7 +168,7 @@ const Content = () => {
     return (
       <div className="m-auto text-center gap-[10px] xl:py-0 py-[40px]">
         <div className="flex justify-center mb-4">
-          <Zap className="inline-grid"/>
+          <Zap className="inline-grid opacity-50" />
         </div>
         <p className="text-[14px] font-medium opacity-80">Generate with Klu</p>
         <p className="text-[14px] opacity-50">
