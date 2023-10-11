@@ -19,7 +19,6 @@ import { toast } from "sonner"
 import * as Accordion from "@/components/ui/accordion"
 import { copyToClipboard, isObject } from "@/utils"
 import { Code } from "@/components/ui/markdown/code-block"
-import { postActionResponseFeedback } from "@/utils/klu"
 
 const ResponseItem = memo(
   ({
@@ -31,10 +30,12 @@ const ResponseItem = memo(
   }) => {
     const {
       response: {
+        setActionResponses,
         storedActionResponses,
         generate,
         saveResponse,
         unsaveResponse,
+        sendFeedback,
       },
     } = useKluNext()
 
@@ -54,13 +55,6 @@ const ResponseItem = memo(
       } finally {
         setState("IDLE")
       }
-    }
-
-    async function sendFeedback(type: "positive" | "negative") {
-      toast.message("Thank you for your feedback")
-      try {
-        await postActionResponseFeedback(type, actionResponse.data_guid)
-      } catch (e) {}
     }
 
     return (
@@ -137,15 +131,29 @@ const ResponseItem = memo(
           <div className="flex items-center gap-[10px]">
             <Button
               variant="secondary"
-              onClick={async () => await sendFeedback("positive")}
+              onClick={async () =>
+                await sendFeedback(actionResponse.data_guid, "positive")
+              }
               icon={{ icon: ThumbsUp }}
               size={"sm"}
+              className={
+                actionResponse.isPositive
+                  ? "text-green-500 bg-green-50 border-green-300 hover:bg-green-100"
+                  : ""
+              }
               disabled={state === "REGENERATING"}
             />
             <Button
               variant="secondary"
-              onClick={async () => await sendFeedback("negative")}
+              onClick={async () =>
+                await sendFeedback(actionResponse.data_guid, "negative")
+              }
               icon={{ icon: ThumbsDown }}
+              className={
+                actionResponse.isNegative
+                  ? "text-red-500 bg-red-50 border-red-300 hover:bg-red-100"
+                  : ""
+              }
               size={"sm"}
               disabled={state === "REGENERATING"}
             />

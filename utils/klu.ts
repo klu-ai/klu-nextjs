@@ -109,13 +109,13 @@ export const postActionResponse = async <T>(
 
 export const postActionResponseFeedback = async (
   type: "positive" | "negative",
-  actionGuid: string
+  dataGuid: string
 ) => {
   try {
     const req = await fetch(`/api/feedback`, {
       method: "POST",
       body: JSON.stringify({
-        id: actionGuid,
+        id: dataGuid,
         type,
       }),
     })

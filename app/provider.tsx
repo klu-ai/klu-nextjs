@@ -12,7 +12,11 @@ import {
 } from "react"
 import { Toaster, toast } from "sonner"
 import { env } from "@/env.mjs"
-import { fetchAction, postActionResponse } from "@/utils/klu"
+import {
+  fetchAction,
+  postActionResponse,
+  postActionResponseFeedback,
+} from "@/utils/klu"
 import { now } from "@/utils"
 
 type SetState<T> = React.Dispatch<SetStateAction<T>>
@@ -38,6 +42,10 @@ export interface IKluNextContext {
       values: any,
       config?: { regenerate?: boolean; runBatch?: boolean }
     ) => Promise<void>
+    sendFeedback: (
+      dataGuid: string,
+      type: "positive" | "negative"
+    ) => Promise<void>
   }
   state: {
     value: AppStateType
@@ -59,6 +67,7 @@ const KluNextContextImpl = createContext<IKluNextContext>({
     saveResponse: () => {},
     unsaveResponse: () => {},
     generate: async () => {},
+    sendFeedback: async () => {},
   },
   state: {
     value: "run-once",
@@ -219,6 +228,28 @@ export default function KluProvider({
     toast.success("Response is removed from your saved")
   }
 
+  const sendFeedback = async (
+    dataGuid: string,
+    type: "positive" | "negative"
+  ) => {
+    toast.message("Thank you for your feedback")
+    try {
+      await postActionResponseFeedback(type, dataGuid)
+      setActionResponses((prev) => {
+        return prev.map((r) => {
+          if (r.data_guid === dataGuid) {
+            return {
+              ...r,
+              isPositive: r.isPositive ? false : type === "positive",
+              isNegative: r.isNegative ? false : type === "negative",
+            }
+          }
+          return r
+        })
+      })
+    } catch (e) {}
+  }
+
   return (
     <KluNextContextImpl.Provider
       value={{
@@ -235,6 +266,7 @@ export default function KluProvider({
           saveResponse,
           unsaveResponse,
           generate,
+          sendFeedback,
         },
         state: {
           value: stateValue,

@@ -7,10 +7,10 @@ import { Markdown } from "@/components/ui/markdown"
 import { Code } from "@/components/ui/markdown/code-block"
 import useInitialChange from "@/hooks/use-initialchange"
 import { copyToClipboard, isObject } from "@/utils"
-import { Bookmark, BookmarkMinus, Copy } from "lucide-react"
+import { Bookmark, BookmarkMinus, Copy, ThumbsDown, ThumbsUp } from "lucide-react"
 
 function Saved({
-  response: { storedActionResponses, unsaveResponse },
+  response: { storedActionResponses, unsaveResponse, sendFeedback },
   selectedActionGuid,
 }: {
   response: IKluNextContext["response"]
@@ -77,23 +77,53 @@ function Saved({
                 <div className="border-black/10 border-[1px] rounded-md bg-white p-4 h-[300px] overflow-y-auto scroll-stable scroll-smooth">
                   <Markdown text={r.msg} />
                 </div>
-                <div className="flex items-center w-full mt-[10px] gap-[10px]">
-                  <Button
-                    variant="secondary"
-                    size={"sm"}
-                    onClick={() => copyToClipboard(r.msg)}
-                    icon={{ icon: Copy }}
-                  >
-                    Copy
-                  </Button>
-                  <Button
-                    variant="secondary"
-                    size={"sm"}
-                    icon={{ icon: BookmarkMinus }}
-                    onClick={() => unsaveResponse(r)}
-                  >
-                    Unsave
-                  </Button>
+                <div className="flex items-center w-full mt-[10px] justify-between">
+                  <div className="flex items-center gap-[10px]">
+                    <Button
+                      variant="secondary"
+                      size={"sm"}
+                      onClick={() => copyToClipboard(r.msg)}
+                      icon={{ icon: Copy }}
+                    >
+                      Copy
+                    </Button>
+                    <Button
+                      variant="secondary"
+                      size={"sm"}
+                      icon={{ icon: BookmarkMinus }}
+                      onClick={() => unsaveResponse(r)}
+                    >
+                      Unsave
+                    </Button>
+                  </div>
+                  <div className="flex items-center gap-[10px]">
+                    <Button
+                      variant="secondary"
+                      onClick={async () =>
+                        await sendFeedback(r.data_guid, "positive")
+                      }
+                      icon={{ icon: ThumbsUp }}
+                      size={"sm"}
+                      className={
+                        r.isPositive
+                          ? "text-green-500 bg-green-50 border-green-300 hover:bg-green-100"
+                          : ""
+                      }
+                    />
+                    <Button
+                      variant="secondary"
+                      onClick={async () =>
+                        await sendFeedback(r.data_guid, "negative")
+                      }
+                      icon={{ icon: ThumbsDown }}
+                      className={
+                        r.isNegative
+                          ? "text-red-500 bg-red-50 border-red-300 hover:bg-red-100"
+                          : ""
+                      }
+                      size={"sm"}
+                    />
+                  </div>
                 </div>
               </Accordion.Content>
             </Accordion.Item>
