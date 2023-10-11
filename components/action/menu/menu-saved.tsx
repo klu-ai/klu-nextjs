@@ -7,7 +7,13 @@ import { Markdown } from "@/components/ui/markdown"
 import { Code } from "@/components/ui/markdown/code-block"
 import useInitialChange from "@/hooks/use-initialchange"
 import { copyToClipboard, isObject } from "@/utils"
-import { Bookmark, BookmarkMinus, Copy, ThumbsDown, ThumbsUp } from "lucide-react"
+import {
+  Bookmark,
+  BookmarkMinus,
+  Copy,
+  ThumbsDown,
+  ThumbsUp,
+} from "lucide-react"
 
 function Saved({
   response: { storedActionResponses, unsaveResponse, sendFeedback },
@@ -16,7 +22,7 @@ function Saved({
   response: IKluNextContext["response"]
   selectedActionGuid: IKluNextContext["action"]["selectedActionGuid"]
 }) {
-  const [selectedStoredActionResponses, _] = useInitialChange(
+  const [selectedStoredActionResponses] = useInitialChange(
     storedActionResponses?.filter((r) => r.actionGuid === selectedActionGuid) ??
       [],
     [selectedActionGuid, storedActionResponses]

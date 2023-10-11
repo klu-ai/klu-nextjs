@@ -28,7 +28,7 @@ function RunBatch({ selectedAction }: { selectedAction: StoredAction }) {
 
   const [responseBatchDoneCount, setResponseBatchDoneCount] = useState(0)
 
-  const [selectedActionVariables, _] = useInitialChange(
+  const [selectedActionVariables] = useInitialChange(
     selectedAction.variables.length > 0 ? selectedAction.variables : ["Input"],
     [selectedAction]
   )
