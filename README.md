@@ -1,5 +1,5 @@
 <a href="https://klu-nextjs.vercel.app/">
-  <img alt="Klu SDK Next.js App Cover" src="app/og.png">
+  <img alt="Klu SDK Next.js App Cover" src="public/og.png">
   <h1 align="center">Klu SDK Next.js Example App</h1>
 </a>
 
@@ -13,17 +13,34 @@
 
 <p align="center">
   <a href="#introduction"><strong>Introduction</strong></a> ·
-  <a href="#deploy-your-own"><strong>Deploy Your Own</strong></a> ·
-  <a href="#setting-up-locally"><strong>Setting Up Locally</strong></a> ·
-  <a href="#contributing"><strong>Contributing</strong></a> ·
+  <a href="#config-for-app"><strong>Config for App</strong></a> ·
+  <a href="#1-click-deploy-on-vercel"><strong>One Click to Deploy</strong></a> ·
+  <a href="#contributing"><strong>Contributing</strong></a> 
 </p>
 <br/>
 
 ## Introduction
 
-This is a Klu SDK Next.js example app to interact with your Klu's actions.
+This is a Klu SDK Next.js example app to interact with your Klu Actions. This template sets a default Action and supports adding more Actions in the future without config changes. Additional Actons save locally for each user.
 
-## Deploy your own
+With this example app you can:
+
+- Generate text
+- Batch generations with CSV
+- Regenerate, copy, and save generations
+- Feedback the responses
+- Manage your saved generations
+
+Additional added Actions, generated responses, and saved generations are saved locally for individual user flexibility and privacy.
+
+## Config for App
+
+Whether deploying to Vercel or running locally, you need to add two variables: your Klu API Key and the Action GUID.
+
+- `KLU_API_KEY` – your Klu API key ([find yours here](https://app.klu.ai/current/settings/developers))
+- `NEXT_PUBLIC_KLU_ACTION_GUID` - your initial Action GUID (found in your Action Deploy modal)
+
+## 1-Click Deploy on Vercel
 
 You can deploy your own version of this app by clicking this button:
 
@@ -31,19 +48,16 @@ You can deploy your own version of this app by clicking this button:
 
 ## Setting Up Locally
 
-To set up the app locally, you'll need to clone the repository and set up the following environment variables:
-
-- `KLU_API_KEY` – your Klu API key (you can get one [here](https://platform.openai.com/account/api-keys))
-- `NEXT_PUBLIC_KLU_ACTION_GUID` - your initial action GUID (you can add and save locally more in the app)
+To set up the app locally, you'll need to clone the repository, rename `.env.sample` to `.env`, and set your environment variables.
 
 Then, run the development server:
 
 ```bash
+pnpm dev
+# or
 npm run dev
 # or
 yarn dev
-# or
-pnpm dev
 ```
 
 ## Contributing

@@ -144,7 +144,7 @@ const ResponseItem = memo(
             />
             <Button
               variant="secondary"
-              onClick={async () => await sendFeedback("positive")}
+              onClick={async () => await sendFeedback("negative")}
               icon={{ icon: ThumbsDown }}
               size={"sm"}
             />

@@ -1,6 +1,6 @@
 "use client"
 
-import { IKluNextContext, useKluNext } from "@/app/provider"
+import { useKluNext } from "@/app/provider"
 import { Button } from "@/components/ui/button"
 import * as Dropzone from "@/components/ui/dropzone"
 import useInitialChange from "@/hooks/use-initialchange"
@@ -43,6 +43,16 @@ function RunBatch({ selectedAction }: { selectedAction: StoredAction }) {
       [key: string]: string
     }>
   }>()
+
+  useEffect(() => {
+    if (
+      !file?.isUploaded ||
+      selectedAction.variables.length === uploadedCSVHeaders?.length
+    )
+      return
+    /* Reset file when selecetd action changes */
+    setFile(undefined)
+  }, [selectedAction])
 
   const onDrop = useCallback(
     async (acceptedFiles: File[]) => {
