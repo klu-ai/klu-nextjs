@@ -7,7 +7,13 @@ import { Markdown } from "@/components/ui/markdown"
 import { Code } from "@/components/ui/markdown/code-block"
 import useInitialChange from "@/hooks/use-initialchange"
 import { copyToClipboard, isObject } from "@/utils"
-import { BookmarkMinus, Copy, ThumbsDown, ThumbsUp } from "lucide-react"
+import {
+  Bookmark,
+  BookmarkMinus,
+  Copy,
+  ThumbsDown,
+  ThumbsUp,
+} from "lucide-react"
 
 function Saved({
   response: { storedActionResponses, unsaveResponse, sendFeedback },
@@ -16,7 +22,7 @@ function Saved({
   response: IKluNextContext["response"]
   selectedActionGuid: IKluNextContext["action"]["selectedActionGuid"]
 }) {
-  const [selectedStoredActionResponses, _] = useInitialChange(
+  const [selectedStoredActionResponses] = useInitialChange(
     storedActionResponses?.filter((r) => r.actionGuid === selectedActionGuid) ??
       [],
     [selectedActionGuid, storedActionResponses]
@@ -25,12 +31,15 @@ function Saved({
   if (!storedActionResponses || selectedStoredActionResponses.length === 0)
     return (
       <div className="flex flex-col items-center justify-center h-[400px]">
-        <div className="flex flex-col gap-[10px] m-auto text-center w-2/3">
+        <div className="flex flex-col gap-[5px] m-auto text-center w-2/3">
+          <div className="flex justify-center mb-4">
+            <Bookmark className="inline-grid opacity-50" />
+          </div>
           <p className="text-[14px] font-medium opacity-80">
-            No Saved Action Response
+            Your Saved Generations
           </p>
           <p className="text-[14px] opacity-50">
-            Please run your action first to be able to see and save the response
+            Saved generations will appear here
           </p>
         </div>
       </div>
