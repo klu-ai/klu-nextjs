@@ -44,6 +44,16 @@ function RunBatch({ selectedAction }: { selectedAction: StoredAction }) {
     }>
   }>()
 
+  useEffect(() => {
+    if (
+      !file?.isUploaded ||
+      selectedAction.variables.length === uploadedCSVHeaders?.length
+    )
+      return
+    /* Reset file when selecetd action changes */
+    setFile(undefined)
+  }, [selectedAction])
+
   const onDrop = useCallback(
     async (acceptedFiles: File[]) => {
       try {
