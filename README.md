@@ -34,7 +34,7 @@ You can deploy your own version of this app by clicking this button:
 To set up the app locally, you'll need to clone the repository and set up the following environment variables:
 
 - `KLU_API_KEY` – your Klu API key (you can get one [here](https://platform.openai.com/account/api-keys))
-- `NEXT_PUBLIC_KLU_ACTION_GUID` - your initial action GUID (you can add more in the app)
+- `NEXT_PUBLIC_KLU_ACTION_GUID` - your initial action GUID (you can add and save locally more in the app)
 
 Then, run the development server:
 
