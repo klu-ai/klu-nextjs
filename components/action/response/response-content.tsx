@@ -12,6 +12,7 @@ import {
   RotateCw,
   ThumbsDown,
   ThumbsUp,
+  Zap,
 } from "lucide-react"
 import { memo, useState } from "react"
 import { toast } from "sonner"
@@ -165,9 +166,12 @@ const Content = () => {
   if (!actionResponses || actionResponses?.length === 0)
     return (
       <div className="m-auto text-center gap-[10px] xl:py-0 py-[40px]">
-        <p className="text-[14px] font-medium opacity-80">No Response</p>
+        <div className="flex justify-center mb-4">
+          <Zap className="inline-grid"/>
+        </div>
+        <p className="text-[14px] font-medium opacity-80">Generate with Klu</p>
         <p className="text-[14px] opacity-50">
-          Please run your action first to be able to see the response
+          Actions generations will appear here
         </p>
       </div>
     )

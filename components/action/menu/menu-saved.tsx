@@ -7,7 +7,7 @@ import { Markdown } from "@/components/ui/markdown"
 import { Code } from "@/components/ui/markdown/code-block"
 import useInitialChange from "@/hooks/use-initialchange"
 import { copyToClipboard, isObject } from "@/utils"
-import { BookmarkMinus, Copy } from "lucide-react"
+import { BookmarkMinus, Copy, Save } from "lucide-react"
 
 function Saved({
   response: { storedActionResponses, unsaveResponse },
@@ -26,11 +26,14 @@ function Saved({
     return (
       <div className="flex flex-col items-center justify-center h-[400px]">
         <div className="flex flex-col gap-[10px] m-auto text-center w-2/3">
+          <div className="flex justify-center mb-4">
+            <Save className="inline-grid"/>
+          </div>
           <p className="text-[14px] font-medium opacity-80">
-            No Saved Action Response
+            Your Saved Generations
           </p>
           <p className="text-[14px] opacity-50">
-            Please run your action first to be able to see and save the response
+            Saved generations will appear here
           </p>
         </div>
       </div>
