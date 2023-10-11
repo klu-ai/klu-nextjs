@@ -124,6 +124,7 @@ const ResponseItem = memo(
                 icon: isActionResponseIsSaved ? BookmarkMinus : Bookmark,
               }}
               size={"sm"}
+              disabled={state === "REGENERATING"}
               onClick={
                 isActionResponseIsSaved
                   ? () => unsaveResponse(actionResponse)
@@ -140,13 +141,13 @@ const ResponseItem = memo(
               icon={{ icon: ThumbsUp }}
               size={"sm"}
               disabled={state === "REGENERATING"}
-              isLoading={state === "REGENERATING"}
             />
             <Button
               variant="secondary"
               onClick={async () => await sendFeedback("negative")}
               icon={{ icon: ThumbsDown }}
               size={"sm"}
+              disabled={state === "REGENERATING"}
             />
           </div>
         </div>
