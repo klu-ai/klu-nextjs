@@ -29,7 +29,7 @@ function RunOnce({ selectedAction }: { selectedAction: StoredAction }) {
     name: item,
     fieldType: LongStringSchema({
       label: item,
-      placeholder: `Your value for "${item}" variable`,
+      placeholder: `Type your input for ${item}`,
     }),
   }))
 
