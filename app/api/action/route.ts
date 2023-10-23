@@ -34,12 +34,6 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(response, {
       status: 200,
     })
-
-    /*     const response = await klu.actions.stream(id, input)
-
-    const stream = iteratorToStream(response.streamingData)
-
-    return new Response(stream) */
   } catch (err) {
     console.error(err)
     return NextResponse.json(
