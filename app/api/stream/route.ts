@@ -1,7 +1,8 @@
 import klu from "@/libs/klu"
 import { readableFromAsyncIterable } from "@/utils/klu"
+import { NextRequest, NextResponse } from "next/server"
 
-export class StreamingTextResponse extends Response {
+export class StreamingTextResponse extends NextResponse {
   constructor(res: ReadableStream, init?: ResponseInit, data?: any) {
     let processedStream = res
 
@@ -21,7 +22,7 @@ export class StreamingTextResponse extends Response {
   }
 }
 
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
   const { input, id } = await req.json()
 
   if (!id || !input) throw new Error("Missing parameters")
