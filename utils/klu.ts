@@ -11,17 +11,21 @@ export const getVariables = (prompt: string): string[] => {
   return Array.from(unique)
 }
 
-/** // https://developer.mozilla.org/docs/Web/API/ReadableStream#convert_async_iterator_to_stream */
-export const iteratorToStream = (iterator: any) => {
-  return new ReadableStream({
+/**
+ * Implements ReadableStream.from(asyncIterable), which isn't documented in MDN and isn't implemented in node.
+ * https://github.com/whatwg/streams/commit/8d7a0bf26eb2cc23e884ddbaac7c1da4b91cf2bc
+ */
+export function readableFromAsyncIterable<T>(iterable: AsyncIterable<T>) {
+  let it = iterable[Symbol.asyncIterator]()
+  return new ReadableStream<T>({
     async pull(controller) {
-      const { value, done } = await iterator.next()
+      const { done, value } = await it.next()
+      if (done) controller.close()
+      else controller.enqueue(value)
+    },
 
-      if (done) {
-        controller.close()
-      } else {
-        controller.enqueue(value)
-      }
+    async cancel(reason) {
+      await it.return?.(reason)
     },
   })
 }
