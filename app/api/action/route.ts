@@ -1,5 +1,5 @@
 import klu from "@/libs/klu"
-import { getVariables, iteratorToStream } from "@/utils/klu"
+import { getVariables } from "@/utils/klu"
 import { NextRequest, NextResponse } from "next/server"
 
 export async function GET(req: NextRequest) {
