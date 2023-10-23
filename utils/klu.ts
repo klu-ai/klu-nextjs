@@ -111,6 +111,48 @@ export const postActionResponse = async <T>(
   }
 }
 
+export const streamActionResponse = async (
+  actionGuid: string,
+  values: any,
+  controller: AbortController,
+  onStream: (text: string) => void,
+  onComplete: (text: string) => void
+) => {
+  try {
+    const req = await fetch(`/api/stream`, {
+      method: "POST",
+      body: JSON.stringify({
+        id: actionGuid,
+        input: values,
+      }),
+      signal: controller.signal,
+    })
+
+    const reader = req.body?.getReader()
+    if (!reader) return
+
+    const decoder = new TextDecoder()
+
+    let done = false
+
+    let text = ""
+    while (!done) {
+      const { done: doneReading, value } = await reader.read()
+      done = doneReading
+      if (done) {
+        onComplete(text)
+        return
+      }
+      const chunkValue = decoder.decode(value)
+      console.log(chunkValue)
+      text += chunkValue
+      onStream(text)
+    }
+  } catch (err) {
+    return handleClientError(err)
+  }
+}
+
 export const postActionResponseFeedback = async (
   type: "positive" | "negative",
   dataGuid: string

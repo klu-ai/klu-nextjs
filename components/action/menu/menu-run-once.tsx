@@ -17,7 +17,7 @@ function RunOnce({ selectedAction }: { selectedAction: StoredAction }) {
   const [isRunning, setRunning] = useState(false)
 
   const {
-    response: { generate },
+    response: { streamResponse },
   } = useKluNext()
 
   const [actionHaveVariables] = useInitialChange(
@@ -63,7 +63,7 @@ function RunOnce({ selectedAction }: { selectedAction: StoredAction }) {
   ) {
     setRunning(true)
     try {
-      await generate(values.input ?? values)
+      await streamResponse(values.input ?? values)
     } catch (e) {
     } finally {
       setRunning(false)

@@ -16,8 +16,10 @@ import {
   fetchAction,
   postActionResponse,
   postActionResponseFeedback,
+  streamActionResponse,
 } from "@/utils/klu"
 import { now } from "@/utils"
+import { nanoid } from "nanoid"
 
 type SetState<T> = React.Dispatch<SetStateAction<T>>
 
@@ -42,6 +44,7 @@ export interface IKluNextContext {
       values: any,
       config?: { regenerate?: boolean; runBatch?: boolean }
     ) => Promise<void>
+    streamResponse: (values: any) => Promise<void>
     sendFeedback: (
       dataGuid: string,
       type: "positive" | "negative"
@@ -67,6 +70,7 @@ const KluNextContextImpl = createContext<IKluNextContext>({
     saveResponse: () => {},
     unsaveResponse: () => {},
     generate: async () => {},
+    streamResponse: async () => {},
     sendFeedback: async () => {},
   },
   state: {
@@ -207,6 +211,65 @@ export default function KluProvider({
     return
   }
 
+  const streamResponse = async (values: any) => {
+    if (!selectedActionGuid) throw new Error("Please select action first")
+
+    const controller = new AbortController()
+
+    const initialGuid = nanoid()
+
+    let actionResponse: ActionResponse = {
+      data_guid: initialGuid,
+      feedbackUrl: "",
+      msg: "",
+      streaming: false,
+      actionGuid: selectedActionGuid,
+      input: values,
+    }
+
+    setActionResponses((prev) => [actionResponse, ...prev])
+
+    const onStream = (text: string) => {
+      console.log(text)
+      setActionResponses((prev) => {
+        return prev.map((r) => {
+          if (r.data_guid === initialGuid) {
+            return {
+              ...actionResponse,
+              streaming: true,
+              msg: text,
+            }
+          }
+          return r
+        })
+      })
+    }
+
+    const onComplete = (text: string) => {
+      setActionResponses((prev) => {
+        return prev.map((r) => {
+          if (r.data_guid === initialGuid) {
+            return {
+              ...r,
+              streaming: true,
+              msg: text,
+            }
+          }
+          return r
+        })
+      })
+      toast.success("Response is generated")
+    }
+
+    await streamActionResponse(
+      selectedActionGuid,
+      values,
+      controller,
+      onStream,
+      onComplete
+    )
+  }
+
   const saveResponse = useCallback(
     (response: ActionResponse) => {
       const storedActionResponse: StoredActionResponse = {
@@ -266,6 +329,7 @@ export default function KluProvider({
           saveResponse,
           unsaveResponse,
           generate,
+          streamResponse,
           sendFeedback,
         },
         state: {
