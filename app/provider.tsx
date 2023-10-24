@@ -16,8 +16,10 @@ import {
   fetchAction,
   postActionResponse,
   postActionResponseFeedback,
-} from "@/utils/klu"
+  streamActionResponse,
+} from "@/utils/fetcher"
 import { now } from "@/utils"
+import { nanoid } from "nanoid"
 
 type SetState<T> = React.Dispatch<SetStateAction<T>>
 
@@ -38,10 +40,7 @@ export interface IKluNextContext {
       | undefined
     saveResponse: (response: ActionResponse) => void
     unsaveResponse: (response: ActionResponse) => void
-    generate: (
-      values: any,
-      config?: { regenerate?: boolean; runBatch?: boolean }
-    ) => Promise<void>
+    streamResponse: (input: any, regenerate?: string) => Promise<void>
     sendFeedback: (
       dataGuid: string,
       type: "positive" | "negative"
@@ -66,7 +65,7 @@ const KluNextContextImpl = createContext<IKluNextContext>({
     storedActionResponses: undefined,
     saveResponse: () => {},
     unsaveResponse: () => {},
-    generate: async () => {},
+    streamResponse: async () => {},
     sendFeedback: async () => {},
   },
   state: {
@@ -177,34 +176,89 @@ export default function KluProvider({
     [selectedActionGuid, storedActions]
   )
 
-  const generate = async (
-    values: any,
-    config?: { regenerate?: boolean; runBatch?: boolean }
-  ) => {
+  const streamResponse = async (input: any, regenerate?: string) => {
     if (!selectedActionGuid) throw new Error("Please select action first")
 
-    const res = await postActionResponse<
-      Omit<ActionResponse, "actionGuid" | "input">
-    >(selectedActionGuid, values)
+    const controller = new AbortController()
 
-    if (!res.data_guid) throw new Error("There's an error")
+    const initialGuid = nanoid()
 
-    const actionResponse: ActionResponse = {
-      ...res,
+    let actionResponse: ActionResponse = {
+      data_guid: initialGuid,
+      feedbackUrl: "",
+      msg: "",
+      streaming: false,
       actionGuid: selectedActionGuid,
-      input: values,
+      input,
     }
 
-    if (config?.regenerate) {
-      setActionResponses((prev) => [
-        ...prev.map((a) => (a.input === values ? actionResponse : a)),
-      ])
-      return
+    const onStreaming = (text: string) => {
+      if (regenerate) {
+        setActionResponses((prev) => {
+          return prev.map((r) => {
+            if (r.data_guid === regenerate) {
+              return {
+                ...r,
+                streaming: true,
+                msg: text,
+              }
+            }
+            return r
+          })
+        })
+        return
+      }
+      setActionResponses((prev) => {
+        return prev.map((r) => {
+          if (r.data_guid === initialGuid) {
+            return {
+              ...actionResponse,
+              streaming: true,
+              msg: text,
+            }
+          }
+          return r
+        })
+      })
     }
 
-    setActionResponses((prev) => [actionResponse, ...prev])
+    const onComplete = (text: string) => {
+      if (regenerate) {
+        setActionResponses((prev) => {
+          return prev.map((r) => {
+            if (r.data_guid === regenerate) {
+              return {
+                ...r,
+                streaming: false,
+                msg: text,
+              }
+            }
+            return r
+          })
+        })
+        return
+      }
+      setActionResponses((prev) => {
+        return prev.map((r) => {
+          if (r.data_guid === initialGuid) {
+            return {
+              ...actionResponse,
+              streaming: false,
+              msg: text,
+            }
+          }
+          return r
+        })
+      })
+    }
 
-    return
+    await streamActionResponse(selectedActionGuid, input, controller, {
+      onComplete,
+      onStreaming,
+      onStart: regenerate
+        ? () => {}
+        : () => setActionResponses((prev) => [actionResponse, ...prev]),
+    })
   }
 
   const saveResponse = useCallback(
@@ -265,7 +319,7 @@ export default function KluProvider({
           setActionResponses,
           saveResponse,
           unsaveResponse,
-          generate,
+          streamResponse,
           sendFeedback,
         },
         state: {

@@ -15,7 +15,7 @@ import { useKluNext } from "@/app/provider"
 import useMounted from "@/hooks/use-mounted"
 import { Skeleton } from "../ui/skeleton"
 import { Action, StoredAction } from "@/types"
-import { fetchAction } from "@/utils/klu"
+import { fetchAction } from "@/utils/fetcher"
 
 const ActionGUIDSchema = z.object({
   actionGuid: StringSchema({
