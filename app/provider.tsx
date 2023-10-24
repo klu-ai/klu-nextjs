@@ -44,7 +44,7 @@ export interface IKluNextContext {
       values: any,
       config?: { regenerate?: boolean; runBatch?: boolean }
     ) => Promise<void>
-    streamResponse: (values: any) => Promise<void>
+    streamResponse: (input: any, regenerate?: string) => Promise<void>
     sendFeedback: (
       dataGuid: string,
       type: "positive" | "negative"
@@ -212,7 +212,9 @@ export default function KluProvider({
     return
   }
 
-  const streamResponse = async (values: any) => {
+  useEffect(() => console.log(actionResponses), [actionResponses])
+
+  const streamResponse = async (input: any, regenerate?: string) => {
     if (!selectedActionGuid) throw new Error("Please select action first")
 
     const controller = new AbortController()
@@ -225,10 +227,25 @@ export default function KluProvider({
       msg: "",
       streaming: false,
       actionGuid: selectedActionGuid,
-      input: values,
+      input,
     }
 
     const onStreaming = (text: string) => {
+      if (regenerate) {
+        setActionResponses((prev) => {
+          return prev.map((r) => {
+            if (r.data_guid === regenerate) {
+              return {
+                ...r,
+                streaming: true,
+                msg: text,
+              }
+            }
+            return r
+          })
+        })
+        return
+      }
       setActionResponses((prev) => {
         return prev.map((r) => {
           if (r.data_guid === initialGuid) {
@@ -244,11 +261,26 @@ export default function KluProvider({
     }
 
     const onComplete = (text: string) => {
+      if (regenerate) {
+        setActionResponses((prev) => {
+          return prev.map((r) => {
+            if (r.data_guid === regenerate) {
+              return {
+                ...r,
+                streaming: false,
+                msg: text,
+              }
+            }
+            return r
+          })
+        })
+        return
+      }
       setActionResponses((prev) => {
         return prev.map((r) => {
           if (r.data_guid === initialGuid) {
             return {
-              ...r,
+              ...actionResponse,
               streaming: false,
               msg: text,
             }
@@ -256,13 +288,14 @@ export default function KluProvider({
           return r
         })
       })
-      toast.success("Response is generated")
     }
 
-    await streamActionResponse(selectedActionGuid, values, controller, {
+    await streamActionResponse(selectedActionGuid, input, controller, {
       onComplete,
       onStreaming,
-      onStart: () => setActionResponses((prev) => [actionResponse, ...prev]),
+      onStart: regenerate
+        ? () => {}
+        : () => setActionResponses((prev) => [actionResponse, ...prev]),
     })
   }
 

@@ -30,9 +30,8 @@ const ResponseItem = memo(
   }) => {
     const {
       response: {
-        setActionResponses,
         storedActionResponses,
-        generate,
+        streamResponse,
         saveResponse,
         unsaveResponse,
         sendFeedback,
@@ -46,10 +45,10 @@ const ResponseItem = memo(
       actionResponse
     )
 
-    async function regenerate(input: ActionResponse["input"]) {
+    async function regenerate(response: ActionResponse) {
       setState("REGENERATING")
       try {
-        await generate(input, { regenerate: true })
+        await streamResponse(response.input, response.data_guid)
         toast.success("Response is regenerated")
       } catch (e) {
       } finally {
@@ -97,7 +96,7 @@ const ResponseItem = memo(
             <div className="flex items-center gap-[10px]">
               <Button
                 variant="secondary"
-                onClick={async () => await regenerate(actionResponse.input)}
+                onClick={async () => await regenerate(actionResponse)}
                 icon={{ icon: RotateCw }}
                 size={"sm"}
                 disabled={state === "REGENERATING"}
