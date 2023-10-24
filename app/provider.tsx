@@ -40,10 +40,6 @@ export interface IKluNextContext {
       | undefined
     saveResponse: (response: ActionResponse) => void
     unsaveResponse: (response: ActionResponse) => void
-    generate: (
-      values: any,
-      config?: { regenerate?: boolean; runBatch?: boolean }
-    ) => Promise<void>
     streamResponse: (input: any, regenerate?: string) => Promise<void>
     sendFeedback: (
       dataGuid: string,
@@ -69,7 +65,6 @@ const KluNextContextImpl = createContext<IKluNextContext>({
     storedActionResponses: undefined,
     saveResponse: () => {},
     unsaveResponse: () => {},
-    generate: async () => {},
     streamResponse: async () => {},
     sendFeedback: async () => {},
   },
@@ -180,39 +175,6 @@ export default function KluProvider({
     },
     [selectedActionGuid, storedActions]
   )
-
-  const generate = async (
-    values: any,
-    config?: { regenerate?: boolean; runBatch?: boolean }
-  ) => {
-    if (!selectedActionGuid) throw new Error("Please select action first")
-
-    const res = await postActionResponse<
-      Omit<ActionResponse, "actionGuid" | "input">
-    >(selectedActionGuid, values)
-
-    if (!res.data_guid) throw new Error("There's an error")
-
-    const actionResponse: ActionResponse = {
-      ...res,
-      streaming: false,
-      actionGuid: selectedActionGuid,
-      input: values,
-    }
-
-    if (config?.regenerate) {
-      setActionResponses((prev) => [
-        ...prev.map((a) => (a.input === values ? actionResponse : a)),
-      ])
-      return
-    }
-
-    setActionResponses((prev) => [actionResponse, ...prev])
-
-    return
-  }
-
-  useEffect(() => console.log(actionResponses), [actionResponses])
 
   const streamResponse = async (input: any, regenerate?: string) => {
     if (!selectedActionGuid) throw new Error("Please select action first")
@@ -357,7 +319,6 @@ export default function KluProvider({
           setActionResponses,
           saveResponse,
           unsaveResponse,
-          generate,
           streamResponse,
           sendFeedback,
         },
