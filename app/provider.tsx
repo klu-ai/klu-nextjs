@@ -17,7 +17,7 @@ import {
   postActionResponse,
   postActionResponseFeedback,
   streamActionResponse,
-} from "@/utils/klu"
+} from "@/utils/fetcher"
 import { now } from "@/utils"
 import { nanoid } from "nanoid"
 

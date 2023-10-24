@@ -6,7 +6,7 @@ import * as Dropzone from "@/components/ui/dropzone"
 import useInitialChange from "@/hooks/use-initialchange"
 import { ActionResponse, StoredAction } from "@/types"
 import { handleClientError } from "@/utils/error"
-import { postActionResponse } from "@/utils/klu"
+import { postActionResponse } from "@/utils/fetcher"
 import {
   CheckCircle,
   CircleDashed,
