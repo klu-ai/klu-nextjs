@@ -229,8 +229,7 @@ export default function KluProvider({
 
     setActionResponses((prev) => [actionResponse, ...prev])
 
-    const onStream = (text: string) => {
-      console.log(text)
+    const onStreaming = (text: string) => {
       setActionResponses((prev) => {
         return prev.map((r) => {
           if (r.data_guid === initialGuid) {
@@ -261,13 +260,10 @@ export default function KluProvider({
       toast.success("Response is generated")
     }
 
-    await streamActionResponse(
-      selectedActionGuid,
-      values,
-      controller,
-      onStream,
-      onComplete
-    )
+    await streamActionResponse(selectedActionGuid, values, controller, {
+      onComplete,
+      onStreaming,
+    })
   }
 
   const saveResponse = useCallback(

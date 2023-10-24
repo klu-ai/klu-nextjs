@@ -45,8 +45,10 @@ export const streamActionResponse = async (
   actionGuid: string,
   values: any,
   controller: AbortController,
-  onStream: (text: string) => void,
-  onComplete: (text: string) => void
+  cb: {
+    onStreaming: (text: string) => void
+    onComplete: (text: string) => void
+  }
 ) => {
   try {
     const req = await fetch(`/api/stream`, {
@@ -66,17 +68,18 @@ export const streamActionResponse = async (
     let done = false
 
     let text = ""
+
     while (!done) {
       const { done: doneReading, value } = await reader.read()
       done = doneReading
       if (done) {
-        onComplete(text)
+        cb.onComplete(text)
         return
       }
       const chunkValue = decoder.decode(value)
       console.log(chunkValue)
       text += chunkValue
-      onStream(text)
+      cb.onStreaming(text)
     }
   } catch (err) {
     return handleClientError(err)
