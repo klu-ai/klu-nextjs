@@ -1,16 +1,24 @@
 import klu from "@/libs/klu"
 import { readableFromAsyncIterable } from "@/utils/klu"
 import { StreamingTextResponse } from "@/utils/stream"
-import { NextRequest } from "next/server"
+import { NextRequest, NextResponse } from "next/server"
 
 export async function POST(req: NextRequest) {
-  const { input, id } = await req.json()
+  try {
+    const { input, id } = await req.json()
 
-  if (!id || !input) throw new Error("Missing parameters")
+    if (!id || !input) throw new Error("Missing parameters")
 
-  const response = await klu.actions.stream(id, input)
+    const response = await klu.actions.stream(id, input)
 
-  const stream = readableFromAsyncIterable(response.streamingData)
+    const stream = readableFromAsyncIterable(response.streamingData)
 
-  return new StreamingTextResponse(stream)
+    return new StreamingTextResponse(stream)
+  } catch (err) {
+    console.error(err)
+    return NextResponse.json(
+      {},
+      { status: 500, statusText: (err as Error).message }
+    )
+  }
 }
