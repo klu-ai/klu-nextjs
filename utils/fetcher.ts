@@ -46,6 +46,7 @@ export const streamActionResponse = async (
   values: any,
   controller: AbortController,
   cb: {
+    onStart?: () => void
     onStreaming: (text: string) => void
     onComplete: (text: string) => void
   }
@@ -68,6 +69,8 @@ export const streamActionResponse = async (
     let done = false
 
     let text = ""
+
+    cb.onStart?.()
 
     while (!done) {
       const { done: doneReading, value } = await reader.read()

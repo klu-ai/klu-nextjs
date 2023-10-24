@@ -227,8 +227,6 @@ export default function KluProvider({
       input: values,
     }
 
-    setActionResponses((prev) => [actionResponse, ...prev])
-
     const onStreaming = (text: string) => {
       setActionResponses((prev) => {
         return prev.map((r) => {
@@ -263,6 +261,7 @@ export default function KluProvider({
     await streamActionResponse(selectedActionGuid, values, controller, {
       onComplete,
       onStreaming,
+      onStart: () => setActionResponses((prev) => [actionResponse, ...prev]),
     })
   }
 
