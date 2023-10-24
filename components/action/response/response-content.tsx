@@ -92,73 +92,75 @@ const ResponseItem = memo(
             </Accordion.Content>
           </Accordion.Item>
         </Accordion.Root>
-        <div className="flex justify-between w-full">
-          <div className="flex items-center gap-[10px]">
-            <Button
-              variant="secondary"
-              onClick={async () => await regenerate(actionResponse.input)}
-              icon={{ icon: RotateCw }}
-              size={"sm"}
-              disabled={state === "REGENERATING"}
-              isLoading={state === "REGENERATING"}
-            >
-              {state === "REGENERATING" ? "Regenerating" : "Regenerate"}
-            </Button>
-            <Button
-              variant="secondary"
-              onClick={() => copyToClipboard(actionResponse.msg)}
-              icon={{ icon: Copy }}
-              size={"sm"}
-            >
-              Copy
-            </Button>
-            <Button
-              variant="secondary"
-              icon={{
-                icon: isActionResponseIsSaved ? BookmarkMinus : Bookmark,
-              }}
-              size={"sm"}
-              disabled={state === "REGENERATING"}
-              onClick={
-                isActionResponseIsSaved
-                  ? () => unsaveResponse(actionResponse)
-                  : () => saveResponse(actionResponse)
-              }
-            >
-              {isActionResponseIsSaved ? "Unsave" : "Save"}
-            </Button>
+        {actionResponse.streaming ? null : (
+          <div className="flex justify-between w-full">
+            <div className="flex items-center gap-[10px]">
+              <Button
+                variant="secondary"
+                onClick={async () => await regenerate(actionResponse.input)}
+                icon={{ icon: RotateCw }}
+                size={"sm"}
+                disabled={state === "REGENERATING"}
+                isLoading={state === "REGENERATING"}
+              >
+                {state === "REGENERATING" ? "Regenerating" : "Regenerate"}
+              </Button>
+              <Button
+                variant="secondary"
+                onClick={() => copyToClipboard(actionResponse.msg)}
+                icon={{ icon: Copy }}
+                size={"sm"}
+              >
+                Copy
+              </Button>
+              <Button
+                variant="secondary"
+                icon={{
+                  icon: isActionResponseIsSaved ? BookmarkMinus : Bookmark,
+                }}
+                size={"sm"}
+                disabled={state === "REGENERATING"}
+                onClick={
+                  isActionResponseIsSaved
+                    ? () => unsaveResponse(actionResponse)
+                    : () => saveResponse(actionResponse)
+                }
+              >
+                {isActionResponseIsSaved ? "Unsave" : "Save"}
+              </Button>
+            </div>
+            <div className="flex items-center gap-[10px]">
+              <Button
+                variant="secondary"
+                onClick={async () =>
+                  await sendFeedback(actionResponse.data_guid, "positive")
+                }
+                icon={{ icon: ThumbsUp }}
+                size={"sm"}
+                className={
+                  actionResponse.isPositive
+                    ? "text-green-500 bg-green-50 border-green-300 hover:bg-green-100"
+                    : ""
+                }
+                disabled={state === "REGENERATING"}
+              />
+              <Button
+                variant="secondary"
+                onClick={async () =>
+                  await sendFeedback(actionResponse.data_guid, "negative")
+                }
+                icon={{ icon: ThumbsDown }}
+                className={
+                  actionResponse.isNegative
+                    ? "text-red-500 bg-red-50 border-red-300 hover:bg-red-100"
+                    : ""
+                }
+                size={"sm"}
+                disabled={state === "REGENERATING"}
+              />
+            </div>
           </div>
-          <div className="flex items-center gap-[10px]">
-            <Button
-              variant="secondary"
-              onClick={async () =>
-                await sendFeedback(actionResponse.data_guid, "positive")
-              }
-              icon={{ icon: ThumbsUp }}
-              size={"sm"}
-              className={
-                actionResponse.isPositive
-                  ? "text-green-500 bg-green-50 border-green-300 hover:bg-green-100"
-                  : ""
-              }
-              disabled={state === "REGENERATING"}
-            />
-            <Button
-              variant="secondary"
-              onClick={async () =>
-                await sendFeedback(actionResponse.data_guid, "negative")
-              }
-              icon={{ icon: ThumbsDown }}
-              className={
-                actionResponse.isNegative
-                  ? "text-red-500 bg-red-50 border-red-300 hover:bg-red-100"
-                  : ""
-              }
-              size={"sm"}
-              disabled={state === "REGENERATING"}
-            />
-          </div>
-        </div>
+        )}
       </div>
     )
   }

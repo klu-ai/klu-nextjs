@@ -195,6 +195,7 @@ export default function KluProvider({
 
     const actionResponse: ActionResponse = {
       ...res,
+      streaming: false,
       actionGuid: selectedActionGuid,
       input: values,
     }
@@ -248,7 +249,7 @@ export default function KluProvider({
           if (r.data_guid === initialGuid) {
             return {
               ...r,
-              streaming: true,
+              streaming: false,
               msg: text,
             }
           }
