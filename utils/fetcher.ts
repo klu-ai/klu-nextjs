@@ -80,7 +80,6 @@ export const streamActionResponse = async (
         return
       }
       const chunkValue = decoder.decode(value)
-      console.log(chunkValue)
       text += chunkValue
       cb.onStreaming(text)
     }
