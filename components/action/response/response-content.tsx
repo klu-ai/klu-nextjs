@@ -86,12 +86,16 @@ const ResponseItem = memo(
             <Accordion.Trigger>Response</Accordion.Trigger>
             <Accordion.Content>
               <div className="border-black/10 border-[1px] rounded-md bg-off-white p-4 h-fit">
-                <Markdown text={actionResponse.msg} />
+                {actionResponse.isStreaming ? (
+                  <p>{actionResponse.msg}</p>
+                ) : (
+                  <Markdown text={actionResponse.msg} />
+                )}
               </div>
             </Accordion.Content>
           </Accordion.Item>
         </Accordion.Root>
-        {actionResponse.streaming ? null : (
+        {actionResponse.isStreaming ? null : (
           <div className="flex justify-between w-full">
             <div className="flex items-center gap-[10px]">
               <Button

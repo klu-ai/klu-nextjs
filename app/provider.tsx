@@ -187,7 +187,7 @@ export default function KluProvider({
       data_guid: initialGuid,
       feedbackUrl: "",
       msg: "",
-      streaming: false,
+      isStreaming: false,
       actionGuid: selectedActionGuid,
       input,
     }
@@ -199,7 +199,7 @@ export default function KluProvider({
             if (r.data_guid === regenerate) {
               return {
                 ...r,
-                streaming: true,
+                isStreaming: true,
                 msg: text,
               }
             }
@@ -213,7 +213,7 @@ export default function KluProvider({
           if (r.data_guid === initialGuid) {
             return {
               ...actionResponse,
-              streaming: true,
+              isStreaming: true,
               msg: text,
             }
           }
@@ -229,7 +229,7 @@ export default function KluProvider({
             if (r.data_guid === regenerate) {
               return {
                 ...r,
-                streaming: false,
+                isStreaming: false,
                 msg: text,
               }
             }
@@ -243,7 +243,7 @@ export default function KluProvider({
           if (r.data_guid === initialGuid) {
             return {
               ...actionResponse,
-              streaming: false,
+              isStreaming: false,
               msg: text,
             }
           }

@@ -22,7 +22,7 @@ export type ActionResponse = {
   msg: string
   data_guid: string
   feedbackUrl: string
-  streaming: boolean
+  isStreaming: boolean
   actionGuid: string
   input: string
   isPositive?: boolean
