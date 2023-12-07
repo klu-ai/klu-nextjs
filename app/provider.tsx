@@ -223,13 +223,14 @@ export default function KluProvider({
       })
     }
 
-    const onComplete = (text: string) => {
+    const onComplete = (text: string, data_guid: string) => {
       if (regenerate) {
         setActionResponses((prev) => {
           return prev.map((r) => {
             if (r.id === regenerate) {
               return {
                 ...r,
+                data_guid,
                 isStreaming: false,
                 msg: text,
               }
@@ -244,6 +245,7 @@ export default function KluProvider({
           if (r.id === initialID) {
             return {
               ...actionResponse,
+              data_guid,
               isStreaming: false,
               msg: text,
             }

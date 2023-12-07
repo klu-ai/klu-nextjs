@@ -1,7 +1,6 @@
 import { Action } from "@/types"
 import { handleClientError } from "./error"
-import { WithPersistedModelData } from "@kluai/core/dist/cjs/common/models"
-import { FeedbackModel } from "@kluai/core/dist/cjs/feedback/models"
+import { FeedbackModel, WithPersistedModelData } from "@kluai/core"
 
 export const fetchAction = async (actionGuid: string) => {
   try {
@@ -48,7 +47,7 @@ export const streamActionResponse = async (
   cb: {
     onStart?: () => void
     onStreaming: (text: string) => void
-    onComplete: (text: string) => void
+    onComplete: (text: string, data_guid: string) => void
   }
 ) => {
   try {
@@ -60,6 +59,8 @@ export const streamActionResponse = async (
       }),
       signal: controller.signal,
     })
+
+    const dataGuid = req.headers.get("X-Action-Response-Data-Id")
 
     const reader = req.body?.getReader()
     if (!reader) return
@@ -76,7 +77,7 @@ export const streamActionResponse = async (
       const { done: doneReading, value } = await reader.read()
       done = doneReading
       if (done) {
-        cb.onComplete(text)
+        cb.onComplete(text, dataGuid!)
         return
       }
       const chunkValue = decoder.decode(value)
