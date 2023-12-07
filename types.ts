@@ -19,6 +19,7 @@ export type Action = {
 export type StoredAction = Stored<Action>
 
 export type ActionResponse = {
+  id: string
   msg: string
   data_guid: string
   feedbackUrl: string
