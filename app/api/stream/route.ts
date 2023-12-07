@@ -13,7 +13,11 @@ export async function POST(req: NextRequest) {
 
     const stream = readableFromAsyncIterable(response.streamingData)
 
-    return new StreamingTextResponse(stream)
+    return new StreamingTextResponse(stream, {
+      headers: {
+        "X-Action-Response-Data-Id": response.data_guid!,
+      },
+    })
   } catch (err) {
     console.error(err)
     return NextResponse.json(

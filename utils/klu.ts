@@ -57,7 +57,7 @@ export const checkIfActionResponseIsSaved = (
    */
   const existingActionResponse = storedActionResponses.find(
     (r) =>
-      r.data_guid === selectedActionResponse.data_guid &&
+      r.id === selectedActionResponse.id &&
       r.actionGuid === selectedActionResponse.actionGuid
   )
 

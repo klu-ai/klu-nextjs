@@ -181,10 +181,11 @@ export default function KluProvider({
 
     const controller = new AbortController()
 
-    const initialGuid = nanoid()
+    const initialID = nanoid()
 
     let actionResponse: ActionResponse = {
-      data_guid: initialGuid,
+      id: initialID,
+      data_guid: "",
       feedbackUrl: "",
       msg: "",
       isStreaming: false,
@@ -196,7 +197,7 @@ export default function KluProvider({
       if (regenerate) {
         setActionResponses((prev) => {
           return prev.map((r) => {
-            if (r.data_guid === regenerate) {
+            if (r.id === regenerate) {
               return {
                 ...r,
                 isStreaming: true,
@@ -210,7 +211,7 @@ export default function KluProvider({
       }
       setActionResponses((prev) => {
         return prev.map((r) => {
-          if (r.data_guid === initialGuid) {
+          if (r.id === initialID) {
             return {
               ...actionResponse,
               isStreaming: true,
@@ -222,13 +223,14 @@ export default function KluProvider({
       })
     }
 
-    const onComplete = (text: string) => {
+    const onComplete = (text: string, data_guid: string) => {
       if (regenerate) {
         setActionResponses((prev) => {
           return prev.map((r) => {
-            if (r.data_guid === regenerate) {
+            if (r.id === regenerate) {
               return {
                 ...r,
+                data_guid,
                 isStreaming: false,
                 msg: text,
               }
@@ -240,9 +242,10 @@ export default function KluProvider({
       }
       setActionResponses((prev) => {
         return prev.map((r) => {
-          if (r.data_guid === initialGuid) {
+          if (r.id === initialID) {
             return {
               ...actionResponse,
+              data_guid,
               isStreaming: false,
               msg: text,
             }
@@ -276,7 +279,7 @@ export default function KluProvider({
 
   const unsaveResponse = (response: ActionResponse) => {
     const newStoredActionResponse = storedActionResponses.filter(
-      (r) => r.data_guid !== response.data_guid
+      (r) => r.id !== response.id
     )
     setStoredActionResponses(newStoredActionResponse)
     toast.success("Response is removed from your saved")
