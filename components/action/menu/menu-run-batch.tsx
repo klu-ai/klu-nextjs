@@ -171,6 +171,7 @@ function RunBatch({ selectedAction }: { selectedAction: StoredAction }) {
     } catch (error) {
       return handleClientError(error)
     }
+    setRunning(false)
   }
 
   return (
