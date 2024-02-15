@@ -1,6 +1,8 @@
 import klu from "@/libs/klu"
 import { NextRequest, NextResponse } from "next/server"
 
+export const maxDuration = 300
+
 export async function POST(req: NextRequest) {
   try {
     const { id, type } = await req.json()

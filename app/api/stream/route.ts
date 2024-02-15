@@ -3,6 +3,8 @@ import { readableFromAsyncIterable } from "@/utils/klu"
 import { StreamingTextResponse } from "@/utils/stream"
 import { NextRequest, NextResponse } from "next/server"
 
+export const maxDuration = 300
+
 export async function POST(req: NextRequest) {
   try {
     const { input, id } = await req.json()

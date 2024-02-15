@@ -2,6 +2,8 @@ import klu from "@/libs/klu"
 import { getVariables } from "@/utils/klu"
 import { NextRequest, NextResponse } from "next/server"
 
+export const maxDuration = 300
+
 export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url)
