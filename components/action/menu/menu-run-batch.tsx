@@ -140,6 +140,38 @@ function RunBatch({ selectedAction }: { selectedAction: StoredAction }) {
   async function runActionOnBatch() {
     if (!file || !uploadedCSVHeaders || uploadedCSVHeaders.length == 0) return
 
+    const onComplete = (text: string, data_guid: string, id: string) => {
+      setActionResponses((prev) => {
+        return prev.map((r) => {
+          if (r.id === id) {
+            return {
+              ...r,
+              data_guid,
+              isStreaming: false,
+              msg: text,
+            }
+          }
+          return r
+        })
+      })
+      setResponseBatchDoneCount((prev) => prev + 1)
+    }
+
+    const onStreaming = (text: string, id: string) => {
+      setActionResponses((prev) => {
+        return prev.map((r) => {
+          if (r.id === id) {
+            return {
+              ...r,
+              isStreaming: true,
+              msg: text,
+            }
+          }
+          return r
+        })
+      })
+    }
+
     setRunning(true)
 
     try {
@@ -167,58 +199,13 @@ function RunBatch({ selectedAction }: { selectedAction: StoredAction }) {
               input: value as any,
             }
 
-            const onComplete = (text: string, data_guid: string) => {
-              setActionResponses((prev) => {
-                return prev.map((r) => {
-                  if (r.id === initialID) {
-                    return {
-                      ...actionResponse,
-                      data_guid,
-                      isStreaming: false,
-                      msg: text,
-                    }
-                  }
-                  return r
-                })
-              })
-            }
-
-            const onStreaming = (text: string) => {
-              setActionResponses((prev) => {
-                return prev.map((r) => {
-                  if (r.id === initialID) {
-                    return {
-                      ...actionResponse,
-                      isStreaming: true,
-                      msg: text,
-                    }
-                  }
-                  return r
-                })
-              })
-            }
-
             await streamActionResponse(selectedAction.guid, value, controller, {
-              onComplete,
-              onStreaming,
-              onStart: () => {
-                console.log("Start")
-                setActionResponses((prev) => [actionResponse, ...prev])
-              },
+              onComplete: (text, data_guid) =>
+                onComplete(text, data_guid, initialID),
+              onStreaming: (text) => onStreaming(text, initialID),
+              onStart: () =>
+                setActionResponses((prev) => [actionResponse, ...prev]),
             })
-
-            /*             const response = await postActionResponse<
-              Omit<ActionResponse, "actionGuid" | "input">
-            >(selectedAction.guid, value)
-            const actionResponse: ActionResponse = {
-              ...response,
-              actionGuid: selectedAction.guid,
-              input: value as any,
-            } */
-
-            setResponseBatchDoneCount((prev) => prev + 1)
-
-            /*             setActionResponses((prev) => [actionResponse, ...prev]) */
 
             return actionResponse
           })
