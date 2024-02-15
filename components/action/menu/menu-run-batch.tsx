@@ -6,7 +6,7 @@ import * as Dropzone from "@/components/ui/dropzone"
 import useInitialChange from "@/hooks/use-initialchange"
 import { ActionResponse, StoredAction } from "@/types"
 import { handleClientError } from "@/utils/error"
-import { postActionResponse } from "@/utils/fetcher"
+import { postActionResponse, streamActionResponse } from "@/utils/fetcher"
 import {
   CheckCircle,
   CircleDashed,
@@ -15,6 +15,7 @@ import {
   Trash,
   XCircle,
 } from "lucide-react"
+import { nanoid } from "nanoid"
 import { useCallback, useEffect, useState } from "react"
 import { useDropzone } from "react-dropzone"
 import { toast } from "sonner"
@@ -140,6 +141,7 @@ function RunBatch({ selectedAction }: { selectedAction: StoredAction }) {
     if (!file || !uploadedCSVHeaders || uploadedCSVHeaders.length == 0) return
 
     setRunning(true)
+
     try {
       const batchSize = 5
       const totalBatches = Math.ceil(file.inputs.length / batchSize)
@@ -151,18 +153,72 @@ function RunBatch({ selectedAction }: { selectedAction: StoredAction }) {
 
         await Promise.allSettled(
           batchInputs.map(async (value) => {
-            const response = await postActionResponse<
+            const controller = new AbortController()
+
+            const initialID = nanoid()
+
+            let actionResponse: ActionResponse = {
+              id: initialID,
+              data_guid: "",
+              feedbackUrl: "",
+              msg: "",
+              isStreaming: false,
+              actionGuid: selectedAction.guid,
+              input: value as any,
+            }
+
+            const onComplete = (text: string, data_guid: string) => {
+              setActionResponses((prev) => {
+                return prev.map((r) => {
+                  if (r.id === initialID) {
+                    return {
+                      ...actionResponse,
+                      data_guid,
+                      isStreaming: false,
+                      msg: text,
+                    }
+                  }
+                  return r
+                })
+              })
+            }
+
+            const onStreaming = (text: string) => {
+              setActionResponses((prev) => {
+                return prev.map((r) => {
+                  if (r.id === initialID) {
+                    return {
+                      ...actionResponse,
+                      isStreaming: true,
+                      msg: text,
+                    }
+                  }
+                  return r
+                })
+              })
+            }
+
+            await streamActionResponse(selectedAction.guid, value, controller, {
+              onComplete,
+              onStreaming,
+              onStart: () => {
+                console.log("Start")
+                setActionResponses((prev) => [actionResponse, ...prev])
+              },
+            })
+
+            /*             const response = await postActionResponse<
               Omit<ActionResponse, "actionGuid" | "input">
             >(selectedAction.guid, value)
             const actionResponse: ActionResponse = {
               ...response,
               actionGuid: selectedAction.guid,
               input: value as any,
-            }
+            } */
 
             setResponseBatchDoneCount((prev) => prev + 1)
 
-            setActionResponses((prev) => [actionResponse, ...prev])
+            /*             setActionResponses((prev) => [actionResponse, ...prev]) */
 
             return actionResponse
           })
