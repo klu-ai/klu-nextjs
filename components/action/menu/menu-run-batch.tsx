@@ -51,7 +51,7 @@ function RunBatch({ selectedAction }: { selectedAction: StoredAction }) {
       selectedAction.variables.length === uploadedCSVHeaders?.length
     )
       return
-    /* Reset file when selecetd action changes */
+    /* Reset file when selected action changes */
     setFile(undefined)
   }, [selectedAction])
 
